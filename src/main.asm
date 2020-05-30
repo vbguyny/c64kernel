@@ -107,6 +107,6 @@ options text '1. Console', console.newline$
         text 'x. Exit', console.newline$
         text console.null$
 
-filename text 'DEMOX', console.null$
+;filename text 'DEMOX', console.null$
+filename text 'DEMO0', console.null$
 failed  text 'Failed to load ', console.null$
-

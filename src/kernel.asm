@@ -3940,27 +3940,49 @@ disk.reset$
         JSR $FFCC     ; call CLRCHN
         RTS
 
-serial.close$
+serial.open$
+
+        jsr serial.set_baud
+
+        lda $ba
+        sta serial.prev_device
+
+        ; Need to close the file first because of a bug in Covert Bitops when used with SD2IEC!
         lda #$05      ; filenumber 5
+        ;nop
+        ;nop
         jsr $ffc3     ; call CLOSE
+        ;nop
+        ;nop
+        ;nop
 
-        jsr $ffcc     ; call CLRCHN
+        ;lda #2
+        lda #1
+        ldx #<serial.baud$
+        ldy #>serial.baud$
+        jsr $ffbd     ; call SETNAM
 
-        lda serial.prev_device
-        sta $ba
+        lda #$05      ; file number 5
+        ldx #$02      ; default to device 2
+        ldy #$00      ; secondary address 0
+        jsr $ffba     ; call SETLFS
+
+        jsr $ffc0     ; call OPEN
+
+        ; Set the RS232 input timer
+        ;poke665,73-(peek(678)*30)
+        lda 678 ; 0=NTSC, 1=PAL
+        beq @poke_665_73
+        lda #43
+        jmp @sta_665
+@poke_665_73
+        lda #73
+@sta_665
+        sta 665
 
         rts
 
-serial.set_baud
-        lda serial.baud$
-        
-;        cmp #14 ; 14 = 9600
-;        bne @set_baud
-;        jsr UP9600.INIT
-;@set_baud
 
-        sta $0293
-        rts
 
 ; Skip $2000-$2800 for custom character set
 
@@ -8232,13 +8254,19 @@ disk.readfile$
         ;sta disk.error$
         ;rts
 
+        ; For some reason the machine has encountered a BREAK.
+        ; Try loading the file again.
+        cmp #$00
+        beq disk.readfile$
+
         jmp disk.readerrorchannel
 
 @ok
 
         ;  X/Y = Address of last byte loaded/verified (if Carry = 0)
         stx math.subtract16.menuend$
-        sty math.subtract32.menuend$+1
+        ;sty math.subtract32.menuend$+1
+        sty math.subtract16.menuend$+1
         lda disk.readfile.address$
         sta math.subtract16.subtrahend$
         lda disk.readfile.address$+1
@@ -8331,7 +8359,17 @@ disk.readfile
 @loop
         jsr $ffb7     ; call READST (read status byte)
         ;bne @eof      ; either EOF or read error
-        beq @cont
+        ;beq @cont
+        bne @no_cont
+        jmp @cont
+@no_cont
+        jmp @eof
+
+        nop
+        nop
+        nop
+        nop
+        nop
 
 @eof
         and #$40      ; end of file?
@@ -9745,47 +9783,47 @@ serial.baud$   byte $08 ; 1200
 ;        1 1 1 0 9600 [NI] (14)
 ;        1 1 1 1 19200 [NI]
 
-serial.open$
+;serial.open$
 
-        jsr serial.set_baud
+;        jsr serial.set_baud
 
-        lda $ba
-        sta serial.prev_device
+;        lda $ba
+;        sta serial.prev_device
 
-        ; Need to close the file first because of a bug in Covert Bitops when used with SD2IEC!
-        lda #$05      ; filenumber 5
-        ;nop
-        ;nop
-        jsr $ffc3     ; call CLOSE
-        ;nop
-        ;nop
-        ;nop
+;        ; Need to close the file first because of a bug in Covert Bitops when used with SD2IEC!
+;        lda #$05      ; filenumber 5
+;        ;nop
+;        ;nop
+;        jsr $ffc3     ; call CLOSE
+;        ;nop
+;        ;nop
+;        ;nop
 
-        ;lda #2
-        lda #1
-        ldx #<serial.baud$
-        ldy #>serial.baud$
-        jsr $ffbd     ; call SETNAM
+;        ;lda #2
+;        lda #1
+;        ldx #<serial.baud$
+;        ldy #>serial.baud$
+;        jsr $ffbd     ; call SETNAM
 
-        lda #$05      ; file number 5
-        ldx #$02      ; default to device 2
-        ldy #$00      ; secondary address 0
-        jsr $ffba     ; call SETLFS
+;        lda #$05      ; file number 5
+;        ldx #$02      ; default to device 2
+;        ldy #$00      ; secondary address 0
+;        jsr $ffba     ; call SETLFS
 
-        jsr $ffc0     ; call OPEN
+;        jsr $ffc0     ; call OPEN
 
-        ; Set the RS232 input timer
-        ;poke665,73-(peek(678)*30)
-        lda 678 ; 0=NTSC, 1=PAL
-        beq @poke_665_73
-        lda #43
-        jmp @sta_665
-@poke_665_73
-        lda #73
-@sta_665
-        sta 665
+;        ; Set the RS232 input timer
+;        ;poke665,73-(peek(678)*30)
+;        lda 678 ; 0=NTSC, 1=PAL
+;        beq @poke_665_73
+;        lda #43
+;        jmp @sta_665
+;@poke_665_73
+;        lda #73
+;@sta_665
+;        sta 665
 
-        rts
+;        rts
 
 ;serial.close$
 ;        lda #$05      ; filenumber 5
@@ -9797,6 +9835,29 @@ serial.open$
 ;        sta $ba
 
 ;        rts
+
+serial.close$
+        lda #$05      ; filenumber 5
+        jsr $ffc3     ; call CLOSE
+
+        jsr $ffcc     ; call CLRCHN
+
+        lda serial.prev_device
+        sta $ba
+
+        rts
+
+serial.set_baud
+        lda serial.baud$
+        
+;        cmp #14 ; 14 = 9600
+;        bne @set_baud
+;        jsr UP9600.INIT
+;@set_baud
+
+        sta $0293
+        rts
+
 
 serial.send.address$ = $22 ; 2 bytes
 serial.send$
