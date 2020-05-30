@@ -1,15 +1,6 @@
-# VBGuyNY C64 Kernel
+# How to make PRG files
 
-A custom kernel written in assembly created for the Commodore 64.
 
-# How to Run
-
-Attach the image file demo.d64 either to an emulater (such as VICE) or load it to a disk and insert it into an actual Commodore 64.
-Type the following command after the READY. prompt and press return.
-
-```
-LOAD"*",8,1
-```
 
 # Sample Program
 
@@ -62,34 +53,17 @@ msg     text 'Hello world!', console.newline$, console.null$
 
 Refer to the Docs for additional information.
 
-# Minimum Requirements
+# Required Programs
 
-- OS: Windows 7 32 bit
-- Emulator: Any Commodore 64 emulater
-- Tools: .NET Framework 4.5 or later
-
-# Recommended Requirements
-
-- OS: Windows 10 64 bit
 - IDE: CBM .prg Studio (https://www.ajordison.co.uk)
 - Emulator: VICE (https://vice-emu.sourceforge.io)
-- Image: DirMaster (https://style64.org/dirmaster)
 - Tools: Visual Studio .NET (https://visualstudio.microsoft.com/vs/features/net-development/)
-- RS232: Virtual serial port driver for null modems. 
-
-# Hardware Requirements
-
-* Only needed if you are planning on running on an actual Commodore 64!
-
-- Commodore 64 or 64C (NTSC/PAL)
-- Optional Epyx Fast Load
-- If using serial communation, modem compatible with Hayes AT commands (example, Wifi64)
 
 # License
 
 MIT License
 
-Copyright (c) 2019-2020 vbguyny
+Copyright (c) 2020 vbguyny
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

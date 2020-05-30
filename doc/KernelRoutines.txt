@@ -1,0 +1,958 @@
+
+====================================================
+MEMORY
+====================================================
+
+----------
+Constants:
+----------
+
+----------
+Variables:
+----------
+
+memory.heapadress ; 2 bytes - The initial address of the heap - default to $a000
+memory.heapadress_lr ; 2 bytes - The last address of the head - defaults to $bfff
+memory.total$ ; 2 bytes - The total amout of bytes in memory (8,192 bytes)
+memory.free$ ; 2 bytes - The total amount of available memory
+memory.used$ ; 2 bytes - The total amount of used memory
+memory.heapstarted ; 1 byte - Indicates if the heap has been initialized
+
+----------
+Routines:
+----------
+
+memory.allocate$ ; Allocates a block of memory based on the length argument
+	memory.allocate.length$ ; 2 bytes (In)
+	memory.allocate.address$ ; 2 bytes - $0000 means nothing was allocated / out of memory (Out)
+
+memory.deallocate$ ; Deallocates a block of memory
+	memory.deallocate.address$ ; 2 bytes (In)
+
+memory.sizeof$ ; Gets the size of a block of memory in bytes
+	memory.sizeof.address$ ; 2 bytes (In)
+	memory.sizeof.length$ ; 2 bytes (Out)
+
+memory.copy$ ; Copies a 8 bit block of memory
+	memory.copy.source$ ; 2 bytes (In)
+	memory.copy.destination$ ; 2 bytes (In)
+	memory.copy.length$ ; 1 byte (In)
+
+memory.copy16$ ; Copies a 16 bit block of memory
+	memory.copy16.source$ ; 2 bytes (In)
+	memory.copy16.destination$ ; 2 bytes (In)
+	memory.copy16.length$ ; 2 bytes (In)
+
+memory.fill$ ; Fills an 8 bit block of memory with a specific value
+	memory.fill.address$ ; 2 bytes (In)
+	memory.fill.length$ ; 1 byte (In)
+	memory.fill.value$ ; 1 byte (In)
+
+memory.fill16$ ; Fills a 16 bit block of memory with a specific value
+	memory.fill16.address$ ; 2 bytes (In)
+	memory.fill16.length$ ; 2 bytes (In)
+	memory.fill16.value$ ; 1 byte (In)
+
+memory.swap$ ; Swaps a 8 bit block of memory between two memory addresses
+	memory.swap.address1$ ; 2 bytes (In)
+	memory.swap.address2$ ; 2 bytes (In)
+	memory.swap.length$ ; 1 byte (In)
+
+memory.swap16$ ; Swaps a 16 bit block of memory between two memory addresses
+	memory.swap16.address1$ ; 2 bytes (In)
+	memory.swap16.address2$ ; 2 bytes (In)
+	memory.swap16.length$ ; 2 bytes (In)
+
+memory.pushregs$ ; Pushes all of the C64 registers onto the stack
+
+memory.pullregs$ ; Pulls all of the C64 registers from the stack
+
+memory.startheap$ ; Starts the heap - gets called automattically when memory is allocated
+
+memory.endheap$ ; Ends the heap - gets called automattically when the Kernel ends
+
+----------
+Notes:
+----------
+
+* memory.startheap$ gets called automattically when ever memory.allocate$ is called either directly or indirectly.
+* memory.endheap$ gets called when the Kernel ends.
+
+====================================================
+STRING
+====================================================
+
+----------
+Constants:
+----------
+
+----------
+Variables:
+----------
+
+----------
+Routines:
+----------
+
+string.create$ ; Allocates a new string based on the length and default character
+	string.create.character$ ; 1 byte (In)
+	string.create.length$ ; 2 byte (In)
+	string.create.address$ ; 2 bytes (Out)
+
+string.getlength$ ; Gets the length of the string in characters
+	string.getlength.address$ ; 2 bytes (In)
+	string.getlength.length$ ; 2 bytes (Out)
+
+string.isequal$ ; Determines if the string in address1 is equal to the string in address2
+	string.isequal.address1$ ; 2 bytes (In)
+	string.isequal.address2$ ; 2 bytes (In)
+	string.isequal.value$ ; 1 byte - Returns 1 if true (1 byte)
+
+string.copy$ ; Makes a copy of a string
+	string.copy.srcaddress$ ; 2 bytes (In)
+	string.copy.dstaddress$ ; 2 bytes (Out)
+
+string.concat$ ; Creates a new string which is the concatenation of string1 and string2
+	string.concat.srcaddress1$ ; 2 bytes (In)
+	string.concat.srcaddress2$ ; 2 bytes (In)
+	string.concat.dstaddress$ ; 2 bytes (Out)
+
+string.indexof$ ; Gets the index of where the string in address2 is located in the string in address1
+	string.indexof.address1$ ; 2 bytes (In)
+	string.indexof.address2$ ; 2 bytes (In)
+	string.indexof.index$ ; 2 bytes (Out) - Returns $ffff is string not found (Out)
+
+string.contains$ ; Determines if the string in address1 contains the string in address2
+	string.contains.address1$ ; 2 bytes (In)
+	string.contains.address2$ ; 2 bytes (In)
+	string.contains.value$ ; 1 byte - Returns 1 if true (1 byte)
+
+string.isheap$ ; Determines if the string was allocated versus a constant
+	string.isheap.address$ ; 2 bytes (In)
+	string.isheap.heap$ ; 1 byte - Returns 1 if true (1 byte)
+
+----------
+Notes:
+----------
+
+* Besure that any string that is created gets deallocated using memory.deallocate$ routine.
+* string.getlength$ differs from memory.sizeof$ as it returns the number of characters versus the total number of bytes.
+
+====================================================
+CONSOLE
+====================================================
+
+----------
+Constants:
+----------
+
+console.newline$ = $fe
+console.null$ = $ff
+console.backspace$ = $fd
+console.quote$ = $27
+
+----------
+Variables:
+----------
+
+console.caretchar$ ; 1 byte - The character to display as teh caret, defaults to '_'
+
+----------
+Routines:
+----------
+
+console.clear$ ; Clears the console
+
+console.scrollup$ ; Scrolls the console up by one row 
+
+console.getcolumn$ ; Gets the current column that where caret is located
+	console.getcolumn.column$ ; 1 byte (Out)
+
+console.getrow$  ; Gets the current row that where caret is located
+	console.getrow.row$ ; 1 byte (Out)
+
+console.setcolumn$ ; Sets the current column that where caret is located
+	console.setcolumn.column$ ; 1 byte (In)
+
+console.setrow$ ; Sets the current column that where caret is located
+	console.setrow.row$ ; 1 byte (In)
+
+console.setbackgroundcolor$ ; Sets the current background color of the console
+	console.setbackgroundcolor.color$ ; 1 byte (In)
+
+console.setbordercolor$ ; Sets the current border color of the console
+	console.setbordercolor.color$ ; 1 byte (In)
+
+console.setforegroundcolor$ ; Sets the current foreground color of the console
+	console.setforegroundcolor.color$ ; 1 byte (In)
+
+console.setcharactercolor$ ; Sets the current character color
+	console.setcharactercolor.color$ ; 1 byte (In)
+
+console.setcharacterinverted$ ; Sets if the characters are inverted
+	console.setcharacterinverted.value$ ; 1 byte (In)
+
+console.writechr$ ; Writes a single character to the console
+	console.writechr.char$ ; 1 byte (In)
+
+console.writeln$ ; Writes a newline character to the console
+
+console.writestr$ ; Writes a string to the console
+	console.writestr.straddress$ ; 2 bytes (In)
+
+console.writeint8$ ; Writes a 8 bit number to the console
+	console.writeint8.integer$ ; 1 byte (Int)
+
+console.writeint16$ ; Writes a 16 bit number to the console
+	console.writeint16.integer$ ; 2 bytes (Int)
+
+console.writeint32$ ; Writes a 32 bit number to the console
+	console.writeint32.integer$ ; 4 bytes (Int)
+
+console.readchr$ ; Reads a single character from the console
+	console.readchr.char$ ; 1 byte (Out)
+
+console.readstr$ ; Reads a string from the console
+	console.readstr.straddress$ ; 2 bytes (Out)
+
+console.readint8$ ; Reads a 8 bit number from the console
+	console.readint8.integer$ ; 1 byte (Out)
+
+console.readint16$ ; Reads a 16 bit number from the console
+	console.readint16.integer$ ; 2 bytes (Out)
+
+console.readint32$ ; Reads a 32 bit number from the console
+	console.readint32.integer$ ; 4 bytes (Out)
+
+console.readkey$ ; Reads which keys are currently being pressed
+	console.readkey.char$ ; 1 byte (Out)
+	console.readkey.char.invalid$ ; 1 byte (Out)
+	console.readkey.state$ ; 1 byte (Out)
+	console.readkey.state.control_port_1$ ; 1 byte (Out)
+	console.readkey.state.no_activity$ ; 1 byte (Out)
+	console.readkey.state.shadowing$ ; 1 byte (Out)
+	console.readkey.state.awaiting_no_activity$ ; 1 byte (Out)
+	console.readkey.state.ok$ ; 1 byte (Out)
+	console.readkey.state.multiplekeys$ ; 1 byte (Out)
+	console.readkey.shift1$ ; 1 byte (Out)
+	console.readkey.shift1.f1$ ; 1 byte (Out)
+	console.readkey.shift1.f3$ ; 1 byte (Out)
+	console.readkey.shift1.f5$ ; 1 byte (Out)
+	console.readkey.shift1.f7$ ; 1 byte (Out)
+	console.readkey.shift1.insert_delete$ ; 1 byte (Out)
+	console.readkey.shift1.left_right$ ; 1 byte (Out)
+	console.readkey.shift1.return$ ; 1 byte (Out)
+	console.readkey.shift1.up_down$ ; 1 byte (Out)
+	console.readkey.shift2$ ; 1 byte (Out)
+	console.readkey.shift2.clear_home$ ; 1 byte (Out)
+	console.readkey.shift2.commodore$ ; 1 byte (Out)
+	console.readkey.shift2.control$ ; 1 byte (Out)
+	console.readkey.shift2.left_shift$ ; 1 byte (Out)
+	console.readkey.shift2.right_shift$ ; 1 byte (Out)
+	console.readkey.shift2.run_stop$ ; 1 byte (Out)
+
+----------
+Notes:
+----------
+
+====================================================
+TIME
+====================================================
+
+----------
+Constants:
+----------
+
+----------
+Variables:
+----------
+
+----------
+Routines:
+----------
+
+time.getticks$ ; Returns the number of milliseconds that the C64 has been powered on
+	time.getticks.result$ ; 4 bytes
+
+time.halt$ ; Pauses program execution for 1 "jiffy"
+
+time.wait$ ; Pauses program execution for a specific number of milliseconds
+	time.wait.milliseconds$ ; 4 bytes
+
+----------
+Notes:
+----------
+
+* The time routines are dependant on the C64 definition of a "jiffy" which is based on the VIC chip being either NTSC/PAL.
+* The ticks getting updated once every "jiffy" which means that the smallest amount of time you can wait$ for something is 1 "jiffy".
+* Even though these routines return 32 bit integers the C64 only stores the a 24 bit number that has a maximum value of $4F19FF, the maximum ticks that can returned is 311039940.
+
+====================================================
+MATH
+====================================================
+
+----------
+Constants:
+----------
+
+----------
+Variables:
+----------
+
+----------
+Routines:
+----------
+
+math.add16$ ; Gets the addition two 16 bit integers (addend1 + addend2 = sum)
+	math.add16.addend1$ ; 2 bytes (In)
+	math.add16.addend2$ ; 2 bytes (In)
+	math.add16.sum$ ; 2 bytes (Out)
+
+math.add24$ ; Gets the addition two 24 bit integers (addend1 + addend2 = sum)
+	math.add24.addend1$ ; 3 bytes (In)
+	math.add24.addend2$ ; 3 bytes (In)
+	math.add24.sum$ ; 3 bytes (Out)
+
+math.add32$ ; Gets the addition two 32 bit integers (addend1 + addend2 = sum)
+	math.add32.addend1$ ; 4 bytes (In)
+	math.add32.addend2$ ; 4 bytes (In)
+	math.add32.sum$ ; 4 bytes (Out)
+
+math.subtract16$ ; Gets the subtration of two 16 bit integers (minuend − subtrahend = difference)
+	math.subtract16.menuend$ ; 2 bytes (In)
+	math.subtract16.subtrahend$ ; 2 bytes (In)
+	math.subtract16.difference$ ; 2 bytes (Out)
+
+math.subtract32$ ; Gets the subtration of two 32 bit integers (minuend − subtrahend = difference)
+	math.subtract32.menuend$ ; 4 bytes (In)
+	math.subtract32.subtrahend$ ; 4 bytes (Out)
+	math.subtract32.difference$ ; 4 bytes (In)
+
+math.inc16$ ; Increments a 16 bit integer by 1
+	math.inc16.address$ ; 2 bytes (In/Out)
+
+math.inc24$ ; Increments a 24 bit integer by 1
+	math.inc24.address$ ; 3 bytes (In/Out)
+
+math.dec16$ = $28BE ; Decrements a 16 bit integer by 1
+	math.dec16.address$ ; 2 bytes (In/Out)
+
+math.multiply8$ ; Gets the multiplication of two 8 bit integers (factor1 * factor2 = product)
+	math.multiply8.factor1$ ; 1 byte (In)
+	math.multiply8.factor2$ ; 1 byte (In)
+	math.multiply8.product$ ; 1 byte (Out)
+
+math.multiply16$ ; Gets the multiplication of two 16 bit integers (factor1 * factor2 = product)
+	math.multiply16.factor1$ ; 2 bytes (In)
+	math.multiply16.factor2$ ; 2 bytes (In)
+	math.multiply16.product$ ; 2 bytes (Out)
+
+math.multiply32$ ; Gets the multiplication of two 32 bit integers (factor1 * factor2 = product)
+	math.multiply32.factor1$ ; 4 bytes (In)
+	math.multiply32.factor2$ ; 4 bytes (In)
+	math.multiply32.product$ ; 4 bytes (Out)
+
+math.divide8$ ; Gets the division of two 8 bit integers (dividend / divisor = quotient remainder)
+	math.divide8.dividend$ ; 1 byte (In)
+	math.divide8.divisor$ ; 1 byte (In)
+	math.divide8.quotient$ ; 1 byte (Out)
+	math.divide8.remainder$ ; 1 byte (Out)
+
+math.divide16$ ; Gets the division of two 16 bit integers (dividend / divisor = quotient remainder)
+	math.divide16.dividend$ ; 2 bytes (In)
+	math.divide16.divisor$ ; 2 bytes (In)
+	math.divide16.quotient$ ; 2 bytes (Out)
+	math.divide16.remainder$ ; 2 bytes (Out)
+
+math.divide32$ ; Gets the division of two 32 bit integers (dividend / divisor = quotient remainder)
+	math.divide32.dividend$ ; 4 bytes (In)
+	math.divide32.divisor$ ; 4 bytes (In)
+	math.divide32.quotient$ ; 4 bytes (Out)
+	math.divide32.remainder$ ; 4 bytes (Out)
+
+math.exponent8$ ; Gets the exponentiation of a 8 bit integer (base ^ power = value)
+	math.exponent8.base$ ; 1 byte (In)
+	math.exponent8.power$ ; 1 byte (In)
+	math.exponent8.value$ ; 1 byte (In)
+
+math.cmp16$ ; Compares two 16 bit integers
+	math.cmp16.num1$ ; 2 bytes (In)
+	math.cmp16.num2$ ; 2 bytes (In)
+
+math.cmp32$ ; Compares two 32 bit integers
+	math.cmp32.num1$ ; 4 bytes (In)
+	math.cmp32.num2$ ; 4 bytes (In)
+
+math.abs16$ ; Gets the absolute value if a 16 bit integer
+	math.abs16.integer$ ; 2 bytes (In)
+	math.abs16.value$ ; 2 bytes (Out)
+
+math.random8$ ; Generates a random 8 bit integer based on the seed value
+	math.random8.seed$ ; 1 byte (In)
+	math.random8.result$ ; 1 byte (Out)
+
+math.random16$ ; Generates a random 16 bit integer based on the seed value
+	math.random16.result$ ; 2 bytes (In)
+	math.random16.seed$ ; 2 bytes (Out)
+
+----------
+Notes:
+----------
+
+* Because the 6502 chip already has instructions to perform 8 bit addition and subtraction there where no routines created for them.
+* There are apparent routines that are not implemented for every bit value and that is because these routines are implemented as a requirement by the Kernel. Also, implement additional routines would increase the size of the Kernel.
+* The speed of these routines depends on the bit size and the complexity of the operation.
+* The cmp16$ and cmp32$ are similar to the 6502 "cmp" instruction as it will set the CPU flags accordingly (Z,C,N). The first argument is loaded into the A register (lda) and the second argument is passed into the "cmp" instruction.  Therefore, after calling the cmp16$ or cmp32$ routine you just need your branch instruction.
+
+====================================================
+GRAPHICS
+====================================================
+
+----------
+Constants:
+----------
+
+graphics.imageaddress$ = $6000
+graphics.spritemulticolor1address$ = $d025
+graphics.spritemulticolor2address$ = $d026
+graphics.sprite1$ = $01
+graphics.sprite2$ = $02
+graphics.sprite3$ = $03
+graphics.sprite4$ = $04
+graphics.sprite5$ = $05
+graphics.sprite6$ = $06
+graphics.sprite7$ = $07
+graphics.sprite8$ = $08
+graphics.sprite1address$ = $4200
+graphics.sprite2address$ = $4240
+graphics.sprite3address$ = $4280
+graphics.sprite4address$ = $42C0
+graphics.sprite5address$ = $4300
+graphics.sprite6address$ = $4340
+graphics.sprite7address$ = $4380
+graphics.sprite8address$ = $43C0
+
+----------
+Variables:
+----------
+
+graphics.isactive$ ; 1 byte
+
+----------
+Routines:
+----------
+
+graphics.enter$ ; Puts the Kernel into graphics mode
+
+graphics.leave$ ; Leaves graphic mode
+
+graphics.clear$ ; Clears the screen
+
+graphics.setcolor$ ; Internally sets the color of graphics to white on black
+
+graphics.setbitmapmode$ ; Puts screen into mode for displaying graphics
+
+graphics.settextmode$ ; Puts screen into mode for displaying text
+
+graphics.sethiresmode$ ; Sets graphics mode to display a hires image
+
+graphics.setmulticolormode$ ; Sets graphics mode to display a multicolor image
+
+graphics.setpixel$ ; Draw a pixel onto the screen
+	graphics.setpixel.color$ ; 1 byte (In)
+	graphics.setpixel.x$ ; 2 bytes (In)
+	graphics.setpixel.y$ ; 2 bytes (In)
+
+graphics.drawline$ ; Draw a line onto the screen
+	graphics.drawline.color$ ; 1 byte (In)
+	graphics.drawline.x1$ ; 2 bytes (In)
+	graphics.drawline.x2$ ; 2 bytes (In)
+	graphics.drawline.y1$ ; 2 bytes (In)
+	graphics.drawline.y2$ ; 2 bytes (In)
+
+graphics.drawbox ; Draws a box onto the screen
+	graphics.drawbox.color$ ; 1 byte (In)
+	graphics.drawbox.x1$ ; 2 bytes (In)
+	graphics.drawbox.x2$ ; 2 bytes (In)
+	graphics.drawbox.y1$ ; 2 bytes (In)
+	graphics.drawbox.y2$ ; 2 bytes (In)
+
+graphics.drawfill$ ; Draws a filled box onto the screen
+	graphics.drawfill.color$ ; 1 byte (In)
+	graphics.drawfill.x1$ ; 2 bytes (In)
+	graphics.drawfill.x2$ ; 2 bytes (In)
+	graphics.drawfill.y1$ ; 2 bytes (In)
+	graphics.drawfill.y2$ ; 2 bytes (In)
+
+graphics.drawcircle$ ; Draws a circle onto the screen
+	graphics.drawcircle.color$ ; 1 byte (In)
+	graphics.drawcircle.radius$ ; 2 bytes (In)
+	graphics.drawcircle.xcenter$ ; 2 bytes (In)
+	graphics.drawcircle.ycenter$ ; 2 bytes (In)
+
+graphics.setspritehires ; Puts a sprite into hires mode
+	graphics.setspritehires.number$ ; 1 byte (In)
+
+graphics.setspritemulticolor$ ; Puts a sprite into multicolor mode
+	graphics.setspritemulticolor.number$ ; 1 byte (In)
+ 
+graphics.showsprite$ ; Shows the sprite onto the screen
+	graphics.showsprite.number$ ; 1 byte (In)
+
+graphics.hidesprite$ ; Hides the sprite from the screen
+	graphics.hidesprite.number$ ; 1 byte (In)
+
+graphics.setspritecolor$ ; Sets the color for a specific sprite
+	graphics.setspritecolor.number$ ; 1 byte (In)
+	graphics.setspritecolor.color$ ; 1 byte (In)
+
+graphics.getspritecolor$ ; Gets the color of a specific sprite
+	graphics.getspritecolor.number$ ; 1 byte (In)
+	graphics.getspritecolor.color$ ; 1 byte (Out)
+
+graphics.setspritelocation$ ; Sets the screen location of the sprite
+	graphics.setspritelocation.number$ ; 1 byte (In)
+	graphics.setspritelocation.x$ ; 2 bytes (In)
+	graphics.setspritelocation.y$ ; 2 bytes (In)
+
+graphics.getspritelocation$ ; Gets the screen location of the sprite
+	graphics.getspritelocation.number$ ; 1 byte (In)
+	graphics.getspritelocation.x$ ; 2 bytes (Out)
+	graphics.getspritelocation.y$ ; 2 bytes (Out)
+
+graphics.stretchspritehorizontally$ ; Stretches a sprite horizontally
+	graphics.stretchspritehorizontally.number$ ; 1 byte (In)
+
+graphics.stretchspritevertically$ ; Stretches a sprite vertically
+	graphics.stretchspritevertically.number$ ; 1 byte (In)
+
+graphics.unstretchspritehorizontally$ ; Unstretches a sprite horizontally
+	graphics.unstretchspritehorizontally.number$ ; 1 byte (In)
+
+graphics.unstretchspritevertically$ = $37DD ; Unstretches a sprite vertically
+	graphics.unstretchspritevertically.number$ ; 1 byte (In)
+
+----------
+Notes:
+----------
+
+* The color arguments is either 1 or 0 where 1 is the forecolor and 0 is the backcolor.
+* Console routines will work while in graphics mode, however, they will be slower.
+* While in grahics mode, you need to call graphics.clear$ to clear the console.
+* The routine graphics.setbitmapmode$ is called automattically when graphics.sethiresmode$ or graphics.setmulticolormode$ is called.
+* In order to display a hires image you need to load the file to graphics.imageaddress$ and then call the graphics.sethiresmode$ routine.
+* In order to display a multicolor image you need to load the file to graphics.imageaddress$ and then call the graphics.setmulticolormode$ routine.
+* You can use 3rd party tools to create multicolor/hires/sprite graphics.
+
+====================================================
+AUDIO
+====================================================
+
+----------
+Constants:
+----------
+
+audio.volumeaddress = $d418
+audio.voice1$ = $01
+audio.voice2$ = $02
+audio.voice3$ = $03
+audio.triangleon$ = $11
+audio.triangleoff$ = $10
+audio.sawtoothon$ = $21
+audio.sawtoothoff$ = $20
+audio.pulseon$ = $41
+audio.pulseoff$ = $40
+audio.noiseon$ = $81
+audio.noiseoff$ = $80
+audio.attackhigh$ = $80
+audio.attackmedium$ = $40
+audio.attacklow$ = $20
+audio.attacklowest$ = $10
+audio.decayhigh$ = $08
+audio.decaymedium$ = $04
+audio.decaylow$ = $02
+audio.decaylowest$ = $01
+audio.sustainhigh$ = $80
+audio.sustainmedium$ = $40
+audio.sustainlow$ = $20
+audio.sustainlowest$ = $10
+audio.releasehigh$ = $08
+audio.releasemedium$ = $04
+audio.releaselow$ = $02
+audio.releaselowest$= $01
+
+----------
+Variables:
+----------
+
+audio.sidinitaddress$ ; 2 bytes - The init address of the sid file, defaults to $a000
+audio.sidplayaddress$ ; 2 bytes - The play address of the sid file, defaults to $a006
+audio.sidtimer$ ; 2 bytes - The playback speed of the sid file, defaults to $5000
+audio.digistartaddress$ ; 2 bytes - Digi start address, defaults to $a000
+audio.digiendaddress$ ; 2 bytes - Digi end address, defaults to $bfff
+audio.digisamplerate$ ; 2 bytes - The sample rate of the audio, default to $0100 (256 for 8 bit mono 8 kHz)
+audio.digifinished$ ; 1 byte - Set to 1 once the audio has finished playing
+
+----------
+Routines:
+----------
+
+audio.beep$ ; Plays a beep tone
+
+audio.setvolume$ ; Sets the audio volume
+	audio.setvolume.value$ ; 1 byte (In)
+
+audio.setattackdecay$ ; Sets the attack/decay for a specific voice
+	audio.setattackdecay.voice$ ; 1 byte (In)
+	audio.setattackdecay.value$ ; 1 byte (In)
+
+audio.setfrequency$ ; Sets the frequency for a specific voice
+	audio.setfrequency.voice$ ; 1 byte (In)
+	audio.setfrequency.frequency$ ; 1 byte (In)
+
+audio.setsustainrelease$ ; Sets the sustain/release for a specific voice
+	audio.setsustainrelease.voice$ ; 1 byte (In)
+	audio.setsustainrelease.value$ ; 1 byte (In)
+
+audio.setwaveform$ ; Sets the waveform for a specific voice
+	audio.setwaveform.voice$ ; 1 byte (In)
+	audio.setwaveform.value$ ; 1 byte (In)
+
+audio.sidstart$ ; Begins playing the sid audio
+
+audio.sidend$ ; Stops playing the sid audio
+
+audio.digiinit$ ; Initializes the digi audio routines, is called by audio.digiplay$
+
+audio.digiplay$ ; Plays the digi audio
+
+audio.digiend$ ; Stops the digi audio
+
+----------
+Notes:
+----------
+
+* When loading a sid/digi file into memory, it needs to be loaded into the memory range $900-$cfff.  Please note that this range can also have memory heap and program instructions loaded so check first before loading your audio file.
+* Playing sid files will slow any program running as they will invoke interrupts to send audio signals to the SID chip.
+* Before playing a sid file, you will need to confirm the values of the audio.sidinitaddress$, audio.sidplayaddress$, and audio.sidtimer$ variables.
+* Playing digi files will freeze any programming running as digi requires the entire chip to playback the audio and also the KERNAL routines are disabled.
+* Before playing a digi file, you will need to confirm the values of the audio.digistartaddress$, audio.digiendaddress$, and audio.digisamplerate$ variables.
+* You can use 3rd party tools to create sid/digi sounds.
+
+====================================================
+DISK
+====================================================
+
+----------
+Constants:
+----------
+
+diskerror.ok$ = $00
+diskerror.block_header_not_found$ = $14
+diskerror.byte_decode_error$ = $18
+diskerror.checksum_error$ = $17
+diskerror.checksum_error_header$ = $1b
+diskerror.cmd_file_not_found$ = $27
+diskerror.data_block_not_present$ = $16
+diskerror.data_extends_block$ = $1c
+diskerror.device_not_present$ = $05
+diskerror.directory_error$ =  $47
+diskerror.disk_directory_full$ = $48
+diskerror.disk_id_mismatch$ = $1d
+diskerror.drive_not_ready$ = $4a
+diskerror.file_exists$ = $3f
+diskerror.file_not_found$ = $3e
+diskerror.file_not_open$ = $3d
+diskerror.file_open$ = $02
+diskerror.file_open_for_write$ = $3c
+diskerror.file_scratched$ = $01
+diskerror.file_too_large$ = $34
+diskerror.file_type_mismatch$ = $40
+diskerror.general_syntax_error$ = $1e
+diskerror.illegal_device_number$ = $09
+diskerror.illegal_sys_track_sector$ = $43
+diskerror.illegal_track_sector$ = $42
+diskerror.invalid_command$ = $1f
+diskerror.invalid_filename$ = $21
+diskerror.long_line$ = $20
+diskerror.missing_file_name$ = $08
+diskerror.no_block$ = $41
+diskerror.no_channels$ = $46
+diskerror.no_file_given$ = $22
+diskerror.not_input_file$ = $06
+diskerror.not_output_file$ = $07
+diskerror.out_of_data$ = $0d
+diskerror.out_of_memory$ = $10
+diskerror.overflow_in_rcd$ = $33
+diskerror.power_up$ = $49
+diskerror.rcd_not_present$ = $32
+diskerror.sync_char_not_found$ = $15
+diskerror.write_protect_on$ = $1a
+diskerror.write_verify_error$ = $19
+
+diskfiletypes.none$ = $00
+diskfiletypes.del$ = $05
+diskfiletypes.prg$ = $01
+diskfiletypes.rel$ = $04
+diskfiletypes.seq$ = $02
+diskfiletypes.usr$ = $03
+
+----------
+Variables:
+----------
+
+disk.error$ ; 1 byte - Equals the error code from the last disk operation, defaults to $00 (diskerror.ok$)
+
+----------
+Routines:
+----------
+
+disk.getdiskinfo$ ; Gets header information about the disk
+	disk.getdiskinfo.blocksfree$ ; 2 bytes (Out)
+	disk.getdiskinfo.label$ ; 17 bytes (Out)
+
+disk.getfileinfo$ ; Gets file information for a specific filename
+	disk.getfileinfo.filename$ ; 2 bytes (In)
+	disk.getfileinfo.blocks$ ; 1 byte (Out)
+	disk.getfileinfo.name$ ; 16 bytes (Out)
+	disk.getfileinfo.type$ ; 1 byte (Out)
+
+disk.getnextfileinfo$ ; Gets the next file information if the filename has a wildcard
+
+disk.getfileinfoclose$ ; Closes the file information request
+
+disk.writefile$ ; Writes a memory block to disk
+	disk.writefile.address$ ; 2 bytes (In)
+	disk.writefile.filename$ ; 2 bytes (In)
+	disk.writefile.length$ ; 2 bytes (In)
+
+disk.readfile$ ; Reads data from disk into memory
+	disk.readfile.address$ ; 2 bytes (In)
+	disk.readfile.filename$ ; 2 bytes (In)
+	disk.readfile.length$ ; 2 bytes (Out)
+
+disk.fileexists$ ; Determines if a file exists
+	disk.fileexists.filename$ ; 2 bytes (In)
+	disk.fileexists.exists$ ; 1 byte (Out)
+
+disk.loadfile$ ; Loads a PRG from disk and runs it
+	disk.loadfile.filename$ ; 2 bytes (In)
+
+disk.copyfile$ ; Copies a file to another
+	disk.copyfile.dstfilename$ ; 2 bytes (In)
+	disk.copyfile.srcfilename$ ; 2 bytes (In)
+
+disk.renamefile$ ; Renames a file to another
+	disk.renamefile.newfilename$ ; 2 bytes (In)
+	disk.renamefile.oldfilename$ ; 2 bytes (In)
+
+disk.scratchfile$ ; Deletes a file
+	disk.scratchfile.filename$ ; 2 bytes (In)
+
+disk.validate$ ; Performs a disk validation
+
+disk.format$ ; Formats a disk
+	disk.format.labelname$ ; 2 bytes (In)
+
+disk.reset$ ; Performs a soft resert of the 1541 drive
+
+----------
+Notes:
+----------
+
+* Need to test the disk.error$ variable after each disk operation to see if it succeeded.
+* You can populate disk.getfileinfo.name$ with a same wildcard characters with the standard LOAD statement.
+* You must call disk.getfileinfoclose$ when you are finished calling the disk.getfileinfo$ and/or disk.getnextfileinfo$ routines.
+* The routine disk.loadfile$ loads the PRG into 
+* The disk routines will work with the Epyx FastLoad cartridge.
+* If you call disk.reset$, you will need to wait atleast 2 seconds before sending another disk command, otherwise the C64 will freeze.
+
+====================================================
+JOYSTICK
+====================================================
+
+----------
+Constants:
+----------
+
+joystick.port1$ = $01
+joystick.port2$ = $02
+
+----------
+Variables:
+----------
+
+----------
+Routines:
+----------
+
+joystick.getstate$ ; Gets the current state of the specific joystick
+	joystick.getstate.port$ ; 1 byte (In)
+	joystick.getstate.deltax$ ; 1 byte (Out)
+	joystick.getstate.deltay$ ; 1 byte (Out)
+	joystick.getstate.fire$ ; 1 byte (Out)
+
+----------
+Notes:
+----------
+
+* The delta values contain the dirction that the axis of the joystick is toward: $00 = center, $01 = right/down, $ff = left/up.
+
+====================================================
+MOUSE
+====================================================
+
+----------
+Constants:
+----------
+
+----------
+Variables:
+----------
+
+----------
+Routines:
+----------
+
+mouse.getstate$ ; Gets the current state of the mouse
+	mouse.getstate.deltax$ ; 1 byte (Out)
+	mouse.getstate.deltay$ ; 1 byte (Out)
+	mouse.getstate.leftbutton$ ; 1 byte (Out)
+	mouse.getstate.rightbutton$ ; 1 byte (Out)
+
+----------
+Notes:
+----------
+
+* The delta values contain the dirction that the mouse is moving toward: 0 = no movement, positive = right/down, negative = left/up.
+* Calling console.readkey$ can prevent mouse.getstate$ from working, the work around is to call time.halt$ prior to calling the mouse.getstate$ routine.
+
+====================================================
+PRINTER
+====================================================
+
+----------
+Constants:
+----------
+
+printererror.ok$ = $00
+printererror.open_error$ = $01
+printererror.print_error$ = $02
+printer.carriage_return$ = $0d
+printer.line_feed$ = $0a
+printer.null$ = $ff
+printer.lower_case$ = $11
+printer.upper_case$ = $91
+
+----------
+Variables:
+----------
+
+printer.error$ ; 1 byte, defaults to $00
+
+----------
+Routines:
+----------
+
+printer.printstr$ ; Prints a string to the printer
+	printer.printstr.address$ ; 2 bytes (In)
+
+----------
+Notes:
+----------
+
+* Need to test the printer.error$ variable after each printer operation to see if it succeeded.
+* Some printers, you need to specify the printer.lower_case$ and printer.upper_case$ characters in the string that you are sending to the printer, otherwise, they won't print properly.
+
+====================================================
+SERIAL
+====================================================
+
+----------
+Constants:
+----------
+
+serial.eot$ = $ff
+
+----------
+Variables:
+----------
+
+serial.baud$ ; 1 byte, defaults to $08 (1200 baud)
+serial.recv_eot$ ; 1 byte, defaults to $00
+serial.send_eot$ ; 1 byte, defaults to $00
+serial.discard_byte$ ; 1 byte, defaults to $00
+
+----------
+Routines:
+----------
+
+serial.open$ ; Opens the serial port for RS232 communication
+
+serial.close$ ; Closes the serial port for RS232 communication
+
+serial.send$ ; Sends a block of data over the serial port
+	serial.send.address$ ; 2 bytes (In)
+
+serial.recv$ ; Receives a block of data from the serial port
+	serial.recv.address$ ; 2 bytes (In)
+
+----------
+Notes:
+----------
+
+* Sometimes the C64 the first byte of data returned from the serial port is corrupted, therefore, setting serial.discard_byte$ will ignore the first byte.
+* Set serial.send_eot$ if you want the serial.send$ routine to always send byte $0d after each call.
+* Set serial.recv_eot$ if you want the serial.recv$ routine to always return when it encounters byte $0d.
+* If the routines are not able to connect to the serial device the C64 will freeze.
+* The Kernel currently only supports 1200 baud.
+
+====================================================
+GENERIC
+====================================================
+
+----------
+Constants:
+----------
+
+color.black$ = $00
+color.white$ = $01
+color.red$ = $02
+color.cyan$ = $03
+color.purple$ = $04
+color.green$ = $05
+color.blue$ = $06
+color.yellow$ = $07
+color.orange$ = $08
+color.brown$ = $09
+color.lightred$ = $0a
+color.darkgrey$ = $0b
+color.grey$ = $0c
+color.lightgreen$ = $0d
+color.lightblue$ = $0e
+color.lightgrey$ = $0f
+
+----------
+Variables:
+----------
+
+----------
+Routines:
+----------
+
+kernel.halt$ ; Pushs the C64 into a halt state, reboot will be required to get out of this state
+
+kernel.reset$ ; Performs a soft reset of the C64.
+ 
+convert.ascii2str$ ; Converts a string of ASCII characters to a string of C4 Kernel characters
+	convert.ascii2str.ascii$ ; 2 bytes (In/Out)
+
+convert.str2ascii$ ; Converts a string of C4 Kernel characters to a string of ASCII characters
+	convert.str2ascii.str$ ; 2 bytes (In/Out)
+
+----------
+Notes:
+----------
+
+* There are many undocumented routines which are not listed here for design reasons, however, they can still be called from any PRG that references the Kernel.
+
