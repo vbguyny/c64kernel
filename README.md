@@ -2,6 +2,8 @@
 
 A custom kernel written in assembly created for the Commodore 64.
 
+![VBGuyNY C64 Kernel](https://raw.githubusercontent.com/vbguyny/c64kernel/master/doc/c64k.png)
+
 # How to Run
 
 Attach the image file demo.d64 either to an emulater (such as VICE) or load it to a disk and insert it into an actual Commodore 64.
@@ -40,7 +42,7 @@ You can alternately you can build a PRG file using the just the header (recommen
 
 ```
 ; Compile to "main.prg"
-incasm "..\src\kernel.hdr"
+incasm "kernel.hdr"
 
 main
 
