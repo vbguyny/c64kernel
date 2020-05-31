@@ -18,7 +18,7 @@ LOAD"*",8,1
 You can build a simple PRG file using the following code. The code below will include the kernel in the PRG file and make it very large (atleast 187 blocks).
 
 ```
-incasm "..\src\kernel.asm"
+incasm "kernel.asm"
 
 main
 
