@@ -134,9 +134,11 @@ anykey          text 'Press any key to continue', console.null$
 
 *=$6000
 ;incbin "logo1-2.kla",2 ; skip the first two bytes
-incbin "logo1-3.kla",2 ; skip the first two bytes
+;incbin "logo1-3.kla",2 ; skip the first two bytes
+incbin "logo.kla",2 ; skip the first two bytes
 
 *=$9000
 ;incbin "logo1.dat",2 ; skip the first two bytes
-incbin "logo1-2.dat",2 ; skip the first two bytes
+;incbin "logo1-2.dat",2 ; skip the first two bytes
+incbin "logo.dat",2 ; skip the first two bytes
 
