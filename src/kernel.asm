@@ -22,9 +22,14 @@ CharSet 2 ; Upper/lower cased characters
 ;        byte    $00, $00, $00
 ;        ;byte    $0e, $08, $1e, $00, $a2, $00, $00, $00 ; 30 NEW
 
-; sys 3849
+;; sys 3849
+;*=$0801
+;        byte    $0e, $08, $14, $00, $9e, $20, $28,  $33, $38, $34, $39, $29, $00 ; 20 SYS (3849)
+;        byte    $00, $00, $00
+
+; sys 3840
 *=$0801
-        byte    $0e, $08, $14, $00, $9e, $20, $28,  $33, $38, $34, $39, $29, $00 ; 20 SYS (3849)
+        byte    $0e, $08, $14, $00, $9e, $20, $28,  $33, $38, $34, $30, $29, $00 ; 20 SYS (3840)
         byte    $00, $00, $00
 
 #region Console Buffer ; 256 bytes
@@ -101,12 +106,17 @@ incasm "font.asm"
         ;lda #$01 ; If debugging in CBM prg Studio, unremark this line
         lda #$00 ; If running from depacker, unremark this line
         sta kernel.debugmode$
-        jmp kernel.begin
+        ;jmp kernel.begin
+        jsr kernel.begin
+        jsr kernel.reset$
 
 kernel.debugmode$       byte $00
 
-        lda #$00
-        sta kernel.debugmode$
+        ;lda #$00
+        ;sta kernel.debugmode$
+        ;nop
+        ;nop
+        nop
         nop
         nop
 
@@ -118,6 +128,7 @@ kernel.begin
         jsr $c000
         jsr kernel.end
         rts
+        ;brk
 
 #endregion
 
@@ -9560,9 +9571,11 @@ disk.loadfile$
 @ok
         ;jmp $c000
         jsr kernel.end
-        pla
-        pla
-        jmp kernel.begin
+        ;pla
+        ;pla
+        ;jmp kernel.begin
+        jsr kernel.begin
+        jsr kernel.reset$
 
 @error
         rts

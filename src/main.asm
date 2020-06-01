@@ -1,4 +1,5 @@
 incasm "kernel.hdr"
+;incasm "kernel.asm"
 
 main
 
@@ -46,6 +47,7 @@ main
         cmp #'x'
         bne @notexit
         jsr DoExit
+
 @notexit
 
         jmp @loop
