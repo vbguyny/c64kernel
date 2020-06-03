@@ -1,0 +1,96 @@
+How to make programs lager than 4kb:
+
+One of the limitations of the C64 Kernel is that it only reserves 4kb of space for the programmer to write their custom program. The thought was that the programmer will need to load the next file using the disk.loadfile$ routine which would overwrite the previous program and execute it automattically.
+
+However, if you require more than 4Kb, there is a way to get upto almost 16Kb of memory by doing the following. If you refer to the MemoryMap.txt file, you can see how the memory is layed out. Notice that the 2 blocks before $c000 is are two items: Heap ($a000-$bfff) and Unused ($9000-$9fff). If your program does not require the use of the heap you could create a program that will manually load the next program into location $9000. After the load is complete (and there were no errors) you can jump to memory $9000 instead of $c000.
+
+For example:
+
+;------------------------------------------------------------------------------------
+;LOAD.ASM:
+incasm "kernel.asm"
+
+main
+	jmp main2
+
+*=$cf00
+main2
+        jsr console.clear$
+
+        lda #<filename
+        sta disk.readfile.filename$
+        lda #>filename
+        sta disk.readfile.filename$+1
+        lda #$00
+        sta disk.readfile.address$
+        lda #$90
+        sta disk.readfile.address$+1
+        jsr disk.readfile$
+
+        lda disk.error$
+        bne @error
+        jmp $9000
+@ok
+
+@error
+        jsr audio.beep$
+
+        ; If we get here, we couldn't load the next program
+        lda #<failed
+        sta console.writestr.straddress$
+        lda #>failed
+        sta console.writestr.straddress$+1
+        jsr console.writestr$
+
+        lda #<filename
+        sta console.writestr.straddress$
+        lda #>filename
+        sta console.writestr.straddress$+1
+        jsr console.writestr$
+        jsr console.writeln$
+
+        lda #<anykey
+        sta console.writestr.straddress$
+        lda #>anykey
+        sta console.writestr.straddress$+1
+        jsr console.writestr$
+        jsr console.readchr$
+
+        jsr kernel.reset$
+
+filename        text 'MAIN', console.null$
+failed          text 'Failed to load ', console.null$
+anykey          text 'Press any key to continue', console.null$
+
+;------------------------------------------------------------------------------------
+
+;------------------------------------------------------------------------------------
+;MAIN.ASM:
+
+incasm "kernel.hdr"
+*=$9000
+
+main
+        lda #<msg
+        sta console.writestr.straddress$
+        lda #>msg
+        sta console.writestr.straddress$+1
+        jsr console.writestr$
+
+        jsr console.readchr$
+
+        jsr kernel.reset$
+
+msg          text 'Hello!', console.null$
+;------------------------------------------------------------------------------------
+
+
+
+Note, you must not use any of routines that do anything with strings (ex: console.readstr$) otherwise the heap will be loaded. You could manually set the memory.heap variables to a different location:
+
+memory.heapadress       word $a000
+memory.heapadress_lr    word $bfff
+memory.total$           word $2000 ; 8,192 bytes
+memory.free$            word $2000 ; 8,192 bytes
+memory.used$            word $0000 ; 0 bytes
+

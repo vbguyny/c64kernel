@@ -1,0 +1,38 @@
+HOW TO LOAD KERNEL ONTO A CASSETTE TAPE:
+
+NOTE: Even that it is possible to use the C64 Kernel with tape device, such as MP32C64, it is very slow and sometimes unreliable.
+
+-Tested with VICE and real C64 (via MP32C64).
+
+Recommended programs:
+-VICE (https://vice-emu.sourceforge.io/index.html#download)
+-DirMaster (https://style64.org/dirmaster)
+-WAV-PRG (http://wav-prg.sourceforge.net/wavprg.html)
+-Audiotap (http://wav-prg.sourceforge.net/audiotap.html)
+
+Recommended hardware:
+-Commodore 64 (Bread-bin or C64C)
+-MP32C64 (eBay, if you are lucky)
+-Headphone jack
+-Audio device (MP3 player or cellphone)
+
+1. Using DirMaster, you need to create T64 image files for each of the PRGs files that you want to load (this includes any SID or KLA files).
+2. Use WAV-PRG with option to convert T64 file to TAP.
+3. Under Output format, select "Fast" (aka Turbo Tape 64) and ensure that the Machine type is correct (PAL vs. NTSC).
+4. Output to TAP and press OK.
+5. Select "kernel.t64" first.
+6. Output to "kernel.tap".
+7. For the remaining T64 files, repeat steps 3-6 but instead select "Slow" for Output format and change the output name to be the same as the input files + ".tap".
+8. Run Audiotap with the option to "Convert from TAP file" and "to a WAV file" and press OK
+9. Select one of the TAP files created from steps 3-7 and save with the same name as the input + ".wav".
+10. Repeat steps 8-9 for all of the TAG files.
+11. Copy the WAV files to a device that is able to playback audio with a headphone jack (such as a cellphone).
+	May need convert to a different audio format if WAV isn't supported by the device.
+12. Connect the tape device to the C64 via the cassette port.
+13. Connect the audio device to the tape device via the audio jack.
+14. Power on the C64.
+15. Press SHIFT+RUN/STOP
+16. Press play on the device for "kernel.wav".
+17. Hold down the space bar on the keyboard while it is loading. (You can release the spacebar once the screen starts flickering.)
+18. At this point the file should have loaded*
+19. You will need to play the next audio file when prompted (for example, after loading the logo, you will need to play "main.wav").
