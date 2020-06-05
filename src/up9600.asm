@@ -1,0 +1,624 @@
+;*=$C800
+        
+        ; UP9600 KERNAL ADAPTER
+        ; ORIGINALLY BY DANIAL DALLMAN
+        ; ADAPTED 2017 FOR KERNAL BY BO ZIMMERMAN
+        ; MODIFIED ON 2/14/2017 1:26A
+        ; .D @0:UP9600.BIN
+        ;  PROVIDED FUNCTIONS
+        JMP UP9600.INIT
+        JMP UP9600.INSTALL; INSTALL AND (PROBE FOR) UP9600 (C=ERROR)
+        JMP UP9600.ENABLE; (RE-)ENABLE INTERFACE
+        JMP UP9600.DISABLE; DISABLE INTERFACE (EG. FOR FLOPPY ACCESSES)
+        ;  RSOUT AND RSIN BOTH MODIFY A AND X REGISTER
+        JMP UP9600.RSOUT; PUT BYTE TO RS232 (BLOCKING)
+        JMP UP9600.RSIN; READ BYTE FROM RS232 (C=TRYAGAIN)
+UP9600.IRQVECT = 788
+UP9600.JIFFIES = $A2; LOWEST BYTE OF SYSTEM'S JIFFIE COUNTER
+UP9600.ORIGIRQ = $EA31; (MUST INCEASE JIFFIE-COUNTER !)
+UP9600.ORIGNMI = $FE47
+UP9600.NMIVECT = 792
+UP9600.WRSPTR = 670; WRITE-POINTER INTO SEND BUFFER
+UP9600.RDSPTR = 669; READ-POINTER INTO SEND BUFFER
+UP9600.WRRPTR = 667; WRITE-POINTER INTO RECEIVE BUFFER
+UP9600.RDRPTR = 668; READ-POINTER INTO RECEIVE BUFFER
+        ;  STATIC VARIABLES
+UP9600.STIME
+        BYTE 0;; COPY OF $A2=JIFFIES TO DETECT TIMEOUTS
+UP9600.OUTSTAT = 169
+UP9600.UPFLAG
+        BYTE 0
+UP9600.SAVBYTE
+        BYTE 0,0,0,0
+        ; JIFFIES .BYTE 0
+UP9600.RECPTR = 247; RECBUF = $CB00;; 247 - 248
+UP9600.SNDPTR = 249; SNDBUF = $CC00;; 249 - 250
+        ; 
+        ; 
+UP9600.INIT
+        SEI
+        LDA #<UP9600.DOOPEN
+        STA $031A
+        LDA #>UP9600.DOOPEN
+        STA $031B
+        LDA #<UP9600.DOCLOSE
+        STA $031C
+        LDA #>UP9600.DOCLOSE
+        STA $031D
+        LDA #<UP9600.DOCHKIN
+        STA $031E
+        LDA #>UP9600.DOCHKIN
+        STA $031F
+        LDA #<UP9600.DOCHKOUT
+        STA $0320
+        LDA #>UP9600.DOCHKOUT
+        STA $0321
+        LDA #<UP9600.DOCHRIN
+        STA $0324
+        LDA #>UP9600.DOCHRIN
+        STA $0325
+        LDA #<UP9600.DOGETIN
+        STA $032A
+        LDA #>UP9600.DOGETIN
+        STA $032B
+        LDA #<UP9600.DOPUT
+        STA $0326
+        LDA #>UP9600.DOPUT
+        STA $0327
+        CLI
+        RTS
+        ;  *******************************
+UP9600.DOOPEN
+        PHA
+        TYA
+        PHA
+        JSR UP9600.DISABLE
+        JSR $F34A; CALL IOPEN
+        LDY #$00
+        LDA $BA
+        CMP #$02
+        BNE UP9600.EOPEN
+        LDY #$00
+         LDA ($BB),Y
+        CMP #$0C
+        BCC UP9600.EOPEN
+        LDA #$01
+        STA UP9600.UPFLAG
+        JSR UP9600.INSTALL
+UP9600.EOPEN
+        PLA
+        TAY
+        PLA
+        LDX #$00
+        CLC
+        RTS
+        ;  *******************************
+UP9600.DOCHRIN
+        LDA UP9600.UPFLAG
+        BEQ UP9600.NOCHRIN
+        LDA $99
+        CMP #$02
+        BEQ UP9600.DOGET2
+UP9600.NOCHRIN
+        JMP $F157
+UP9600.DOGETIN
+        LDA UP9600.UPFLAG
+        BEQ UP9600.NOGETIN
+        LDA $99
+        CMP #$02
+        BEQ UP9600.DOGET2
+UP9600.NOGETIN
+        JMP $F13E
+UP9600.DOGET2
+        TYA
+        PHA
+        TXA
+        PHA
+        LDA #$00
+        STA UP9600.SAVBYTE
+        STA $0297
+        JSR UP9600.RSIN
+        BCC UP9600.DOGOTIN
+        PLA
+        TAX
+        PLA
+        TAY
+        LDA #$08
+        STA $0297
+        LDA #$00
+        CLC
+        RTS
+UP9600.DOGOTIN
+        STA UP9600.SAVBYTE
+UP9600.DOGET4
+        PLA
+        TAX
+        PLA
+        TAY
+        LDA UP9600.SAVBYTE
+        CLC
+        RTS
+        ;  *******************************
+UP9600.DOPUT
+        PHA
+        LDA UP9600.UPFLAG
+        BEQ UP9600.NOPUT1
+        LDA $9A
+        CMP #$02
+        BEQ UP9600.DOPUT2
+UP9600.NOPUT1
+        PLA
+        JMP $F1CA
+UP9600.DOPUT2
+        CLC
+        PLA
+        JSR UP9600.RSOUT
+        LDA #$00
+        STA $0297
+        CLC
+UP9600.DOPUT4
+        RTS
+        ;  *******************************
+        ; ;;;;;;;;;;;;;;;;
+        nop
+        nop
+UP9600.DOCLOSE
+        PHA
+        JSR UP9600.DISABLE
+        JSR $F314
+        BEQ UP9600.DOCLO2
+        PLA
+        CLC
+        RTS
+UP9600.DOCLO2
+        JSR $F31F; SET BA
+        LDA $BA
+        CMP #$02
+        BEQ UP9600.DOCLO4
+UP9600.DOCLO3
+        PLA
+        JMP $F291
+UP9600.DOCLO4
+        LDA #$00
+        STA UP9600.UPFLAG
+        PLA
+        LDX #$00
+        CLC
+        RTS
+        ;  *******************************
+UP9600.DOCHKIN
+        PHA
+        LDA UP9600.UPFLAG
+        BNE UP9600.DOCHKI1
+        PLA
+        JMP $F20E
+UP9600.DOCHKI1
+        PLA
+        JSR $F30F
+        BEQ UP9600.DOCHKI2
+        JMP $F701
+UP9600.DOCHKI2
+        JSR $F31F
+        LDA $BA
+        CMP #$02
+        BEQ UP9600.DOCHKI4
+        CMP #$04
+        BCC UP9600.NOCHKIN
+UP9600.DOCHKI3
+        JSR UP9600.DISABLE
+        JMP UP9600.NOCHKIN
+UP9600.DOCHKI4
+        STA $99
+        JSR UP9600.ENABLE
+        CLC
+        RTS
+UP9600.NOCHKIN
+        JMP $F219
+        ; 
+UP9600.DOCHKOUT
+        PHA
+        LDA UP9600.UPFLAG
+        BNE UP9600.DOCHKO1
+        PLA
+        JMP $F250
+UP9600.DOCHKO1
+        PLA
+        JSR $F30F
+        BEQ UP9600.DOCHKO2
+        JMP $F701
+UP9600.DOCHKO2
+        JSR $F31F
+        LDA $BA
+        CMP #$02
+        BEQ UP9600.DOCHKO4
+        CMP #$04
+        BCC UP9600.NOCHKOUT
+UP9600.DOCHKO3
+        JSR UP9600.DISABLE
+        JMP UP9600.NOCHKOUT
+UP9600.DOCHKO4
+        STA $9A
+        JSR UP9600.ENABLE
+        CLC
+        RTS
+UP9600.NOCHKOUT
+        JMP $F25B
+        ;  *******************************
+UP9600.NMIDOBIT
+        PHA
+        BIT $DD0D; CHECK BIT 7 (STARTBIT PRINT)
+        BPL UP9600.NMIDOBI2; NO STARTBIT RECEIVED, THEN SKIP
+        LDA #$13
+        STA $DD0F; START TIMER B (FORCED RELOAD, SIGNAL AT PB7)
+        STA $DD0D; DISABLE TIMER AND FLAG INTERRUPTS
+        LDA #<UP9600.NMIBYTRY; ON NEXT NMI CALL NMIBYTRY
+        STA UP9600.NMIVECT; (TRIGGERED BY SDR FULL)
+        LDA #>UP9600.NMIBYTRY
+        STA UP9600.NMIVECT+1
+UP9600.NMIDOBI2
+        PLA; IGNORE, IF NMI WAS TRIGGERED BY RESTORE-KEY
+        RTI
+        ; 
+UP9600.NMIBYTRY
+        PHA
+        BIT $DD0D; CHECK BIT 7 (SDR FULL PRINT)
+        BPL UP9600.NMIDOBI2; SDR NOT FULL, THEN SKIP (EG. RESTORE-KEY)
+        LDA #$92
+        STA $DD0F; STOP TIMER B (KEEP SIGNALLING AT PB7!)
+        STA $DD0D; ENABLE FLAG (AND TIMER) INTERRUPTS
+        LDA #<UP9600.NMIDOBIT; ON NEXT NMI CALL NMIDOBIT
+        STA UP9600.NMIVECT; (TRIGGERED BY A STARTBIT)
+        LDA #>UP9600.NMIDOBIT
+        STA UP9600.NMIVECT+1
+        TXA
+        PHA
+        TYA
+        PHA
+        LDA $DD0C; READ SDR (BIT0=DATABIT7,...,BIT7=DATABIT0)
+        CMP #128; MOVE BIT7 INTO CARRY-FLAG
+        AND #127
+        TAX
+        LDA UP9600.REVTAB,X; READ DATABITS 1-7 FROM LOOKUP TABLE
+        ADC #0; ADD DATABIT0
+        LDY UP9600.WRRPTR; AND WRITE IT INTO THE RECEIVE BUFFER
+        STA (UP9600.RECPTR),Y
+        INY
+        STY UP9600.WRRPTR
+        SEC;;START BUFFER FULL CHK
+        TYA
+        SBC UP9600.RDRPTR
+        CMP #200
+        BCC UP9600.NMIBYTR2
+        LDA $DD01;; MORE THAN 200 BYTES IN THE RECEIVE BUFFER
+        AND #$FD;; THEN DISABLE RTS
+        STA $DD01
+UP9600.NMIBYTR2
+        PLA
+        TAY
+        PLA
+        TAX
+        PLA
+        RTI
+        ;  *******************************************************
+        ;  IRQ PART
+UP9600.NEWIRQ
+        LDA $DC0D
+UP9600.NEWIRQ1
+        LSR; READ IRQ-MASK
+        LSR; MOVE BIT1 INTO CARRY-FLAG (TIMER B - FLAG)
+        AND #$02; TEST BIT3 (SDR - FLAG)
+        BEQ UP9600.NEWIRQ3; SDR NOT EMPTY, THEN SKIP THE FIRST PART
+        LDX UP9600.OUTSTAT
+        BEQ UP9600.NEWIRQ2; SKIP, IF WE'RE NOT WAITING FOR AN EMPTY SDR
+        DEX
+        STX UP9600.OUTSTAT
+UP9600.NEWIRQ2
+        ;BCC UP9600.NEWIRQ6
+        bcs UP9600.NEWIRQ3
+        jmp UP9600.NEWIRQ6
+UP9600.NEWIRQ3
+        CLI
+        JSR $FFEA
+        LDA $CC
+
+        ;BNE UP9600.NEWIRQ5
+        beq UP9600.NEWIRQ3_1
+        jmp UP9600.NEWIRQ5
+UP9600.NEWIRQ3_1
+
+        DEC $CD
+
+        ;BNE UP9600.NEWIRQ5
+        beq UP9600.NEWIRQ3_2
+        jmp UP9600.NEWIRQ5
+UP9600.NEWIRQ3_2
+
+        LDA #$14
+        STA $CD
+        LDY $D3
+        LSR $CF
+        LDX $0287
+        LDA ($D1),Y
+        BCS UP9600.NEWIRQ4
+        INC $CF
+        STA $CE
+        JSR $EA24
+        LDA ($F3),Y
+        STA $0287
+        LDX $0286
+        LDA $CE
+UP9600.NEWIRQ4
+        EOR #$80
+        JSR $EA1C
+UP9600.NEWIRQ5
+        JSR $EA87
+UP9600.NEWIRQ6
+        JMP $EA81
+        ;  *******************************
+        ;  GET BYTE FROM SERIAL INTERFACE
+UP9600.RSIN
+        LDY UP9600.RDRPTR
+        CPY UP9600.WRRPTR
+        BEQ UP9600.RSIN3; SKIP (EMPTY BUFFER, RETURN WITH CARRY SET)
+        LDA (UP9600.RECPTR),Y
+        INY
+        STY UP9600.RDRPTR
+        PHA;;BEGIN BUFFER EMPTYING CHK
+        TYA
+        SEC
+        SBC UP9600.WRRPTR
+        CMP #206;;256-50
+        BCC UP9600.RSIN2
+        LDA #2
+        ORA $DD01
+        STA $DD01;; ENABLE RTS
+        CLC
+UP9600.RSIN2
+        PLA
+UP9600.RSIN3
+        RTS
+        ;  ******************************
+        ;  PUT BYTE TO SERIAL INTERFACE
+UP9600.RSOUT
+        PHA
+        STA $9E
+        CMP #$80
+        AND #$7F
+        STX $A8
+        STY $A7
+        TAX
+        JSR UP9600.RSOUTX
+UP9600.RSOUT3
+        LDA UP9600.REVTAB,X
+        ADC #$00
+        LSR
+        SEI
+        STA $DC0C
+        LDA #$02
+        STA UP9600.OUTSTAT
+        ROR
+        ORA #$7F
+        STA $DC0C
+        CLI
+        LDX $A8
+        LDY $A7
+        PLA
+        RTS
+UP9600.RSOUTX
+        CLI
+        LDA #$FD
+        STA $A2
+UP9600.RSOUTX2
+        LDA UP9600.OUTSTAT
+        BEQ UP9600.RSOUTX3
+        BIT $A2
+        BMI UP9600.RSOUTX2
+UP9600.RSOUTX3
+        JMP $F490
+        ;  ******************************
+        ;  INSTALL (AND PROBE FOR) SERIAL INTERFACE
+        ;  RETURN WITH CARRY SET IF THERE WAS AN ERROR
+UP9600.INSTERR
+        CLI
+        SEC
+        RTS
+UP9600.INSTALL
+        SEI
+        LDA UP9600.IRQVECT
+        CMP #<UP9600.ORIGIRQ
+        BNE UP9600.INSTERR; IRQ-VECTOR ALREADY CHANGED
+        LDA UP9600.IRQVECT+1
+        CMP #>UP9600.ORIGIRQ
+        BNE UP9600.INSTERR; IRQ-VECTOR ALREADY CHANGED
+        LDA UP9600.NMIVECT
+        CMP #<UP9600.ORIGNMI
+        BNE UP9600.INSTERR; NMI-VECTOR ALREADY CHANGED
+        LDA UP9600.NMIVECT+1
+        CMP #>UP9600.ORIGNMI
+        BNE UP9600.INSTERR; NMI-VECTOR ALREADY CHANGED
+        LDY #0
+        STY UP9600.WRSPTR
+        STY UP9600.RDSPTR
+        STY UP9600.WRRPTR
+        STY UP9600.RDRPTR
+        ;  PROBE FOR RS232 INTERFACE
+        CLI
+        LDA #$7F
+        STA $DD0D; DISABLE ALL NMIS
+        LDA #$80
+        STA $DD03; PB7 USED AS OUTPUT
+        STA $DD0E; STOP TIMERA
+        STA $DD0F; STOP TIMERB
+        BIT $DD0D; CLEAR PENDING INTERRUPTS
+        LDX #8
+UP9600.INSTALL2
+        STX $DD01; TOGGLE TXD
+        STA $DD01; AND LOOK IF IT TRIGGERS AN
+        DEX; SHIFT-REGISTER INTERRUPT
+        BNE UP9600.INSTALL2
+        LDA $DD0D; CHECK FOR BIT3 (SDR-FLAG)
+        AND #8
+        BEQ UP9600.INSTERR; NO INTERFACE DETECTED
+        ;  GENERATE LOOKUP TABLE
+        LDX #0
+UP9600.INSTALL3
+        STX UP9600.OUTSTAT; OUTSTAT USED AS TEMPORARY VARIABLE
+        LDY #8
+UP9600.INSTALL4
+        ASL UP9600.OUTSTAT
+        ROR
+        DEY
+        BNE UP9600.INSTALL4
+        STA UP9600.REVTAB,X
+        INX
+        BPL UP9600.INSTALL3
+        ;  ******************************
+        ;  ENABLE SERIAL INTERFACE (IRQ+NMI)
+UP9600.ENABLE
+        PHA
+        TXA
+        PHA
+        TYA
+        PHA
+        LDA UP9600.IRQVECT
+        CMP #<UP9600.NEWIRQ
+        
+        ;BNE UP9600.ENABL2
+        beq UP9600.ENABLE_1
+        jmp UP9600.ENABL2
+        nop
+        nop
+        nop
+        nop
+UP9600.ENABLE_1
+
+        LDA UP9600.IRQVECT+1
+        CMP #>UP9600.NEWIRQ
+        
+        ;BNE UP9600.ENABL2
+        beq UP9600.ENABLE_2
+        jmp UP9600.ENABL2
+UP9600.ENABLE_2
+
+        PLA
+        TAY
+        PLA
+        TAX
+        PLA
+        RTS
+UP9600.ENABL2
+        SEI
+        LDX #<UP9600.NEWIRQ; INSTALL NEW IRQ-HANDLER
+        LDY #>UP9600.NEWIRQ
+        STX UP9600.IRQVECT
+        STY UP9600.IRQVECT+1
+        LDX #<UP9600.NMIDOBIT; INSTALL NEW NMI-HANDLER
+        LDY #>UP9600.NMIDOBIT
+        STX UP9600.NMIVECT
+        STY UP9600.NMIVECT+1
+        LDX $2A6; PAL OR NTSC VERSION PRINT
+        LDA UP9600.ILOTAB,X; (KEYSCAN INTERRUPT ONCE EVERY 1/64 SECOND)
+        STA $DC06; (SORRY THIS WILL BREAK CODE, THAT USES
+        LDA UP9600.IHITAB,X; THE TI$ - VARIABLE)
+        STA $DC07; START VALUE FOR TIMER B (OF CIA1)
+        TXA
+        ASL
+        EOR #$33; ** TIME CONSTANT FOR SENDER **
+        LDX #0; 51 OR 55 DEPENDING ON PAL/NTSC VERSION
+        STA $DC04; START VALUE FOR TIMERA (OF CIA1)
+        STX $DC05; (TIME IS AROUND 1/(2*BAUDRATE) )
+        ASL; ** TIME CONSTANT FOR RECEIVER **
+        ORA #1; 103 OR 111 DEPENDING ON PAL/NTSC VERSION
+        STA $DD06; START VALUE FOR TIMERB (OF CIA2)
+        STX $DD07; (TIME IS AROUND 1/BAUDRATE )
+        LDA #$41; START TIMERA OF CIA1, SP1 USED AS OUTPUT
+        STA $DC0E; GENERATES THE SENDER'S BIT CLOCK
+        LDA #1
+        STA UP9600.OUTSTAT
+        STA $DC0D; DISABLE TIMERA (CIA1) INTERRUPT
+        STA $DC0F; START TIMERB OF CIA1 (GENERATES KEYSCAN IRQ)
+        LDA #$92; STOP TIMERB OF CIA2 (ENABLE SIGNAL AT PB7)
+        STA $DD0F
+        LDA #$98
+        BIT $DD0D; CLEAR PENDING NMIS
+        STA $DD0D; ENABLE NMI (SDR AND FLAG) (CIA2)
+        LDA #$8A
+        STA $DC0D; ENABLE IRQ (TIMERB AND SDR) (CIA1)
+        LDA #$FF
+        STA $DD01; PB0-7 DEFAULT TO 1
+        STA $DC0C; SP1 DEFAULTS TO 1
+        SEC
+        LDA UP9600.WRRPTR
+        SBC UP9600.RDRPTR
+        CMP #200
+        BCS UP9600.ENABLE2;; DON'T ENABLE RTS IF REC-BUFFER IS FULL
+        LDA #2;; ENABLE RTS
+        STA $DD03;; (THE RTS LINE IS THE ONLY OUTPUT)
+UP9600.ENABLE2
+        CLI
+        PLA
+        TAY
+        PLA
+        TAX
+        PLA
+        RTS
+        ;  TABLE OF TIMER VALUES FOR PAL AND NTSC VERSION
+UP9600.ILOTAB
+        BYTE 149,37
+        ; 
+UP9600.IHITAB
+        BYTE 66,64
+        ;  *******************************************************
+        ;  DISABLE SERIAL INTERFACE
+UP9600.DISABLE
+        PHA
+        TXA
+        PHA
+        TYA
+        PHA
+        LDA UP9600.IRQVECT
+        CMP #<UP9600.NEWIRQ
+        BNE UP9600.NODIS
+        LDA UP9600.IRQVECT+1
+        CMP #>UP9600.NEWIRQ
+        BEQ UP9600.DISABL2
+UP9600.NODIS
+        PLA
+        TAY
+        PLA
+        TAX
+        PLA
+        RTS
+UP9600.DISABL2
+        SEI
+        LDA $DD01; DISABLE RTS
+        AND #$FD
+        STA $DD01
+        LDA #$7F
+        STA $DD0D; DISABLE ALL CIA INTERRUPTS
+        STA $DC0D
+        LDA #$41; QUICK (AND DIRTY) HACK TO SWITCH BACK
+        STA $DC05; TO THE DEFAULT CIA1 CONFIGURATION
+        LDA #$81
+        STA $DC0D; ENABLE TIMER1 (THIS IS DEFAULT)
+        LDA #<UP9600.ORIGIRQ; RESTORE OLD IRQ-HANDLER
+        STA UP9600.IRQVECT
+        LDA #>UP9600.ORIGIRQ
+        STA UP9600.IRQVECT+1
+        LDA #<UP9600.ORIGNMI; RESTORE OLD NMI-HANDLER
+        STA UP9600.NMIVECT
+        LDA #>UP9600.ORIGNMI
+        STA UP9600.NMIVECT+1
+        CLI
+        PLA
+        TAY
+        PLA
+        TAX
+        PLA
+        RTS
+        ; 
+        ; 
+UP9600.REVTAB
+        ; .BUF 128
+UP9600.PRINT
+        NOP; :F$="UP9600.BAS":OPEN1,8,15,"S0:UP9600*":CLOSE1:SAVEF$,8

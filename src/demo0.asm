@@ -328,6 +328,23 @@ Do2
         
         jsr console.clear$
 
+
+;        lda #<baudmsg
+;        sta console.writestr.straddress$
+;        lda #>baudmsg
+;        sta console.writestr.straddress$+1
+;        jsr console.writestr$
+
+;        jsr console.readint8$
+;        lda console.readint8.integer$
+;        sta baud
+
+;        jsr console.writeln$
+        
+        ;jsr $c800 ; INIT
+        ;jsr $ce00 ; setup
+
+
         lda #<inf1
         sta console.writestr.straddress$
         lda #>inf1
@@ -345,7 +362,8 @@ Do2
         lda memory.allocate.address$+1
         sta resp+1
 
-        lda #8 ; 8 = 1200
+        ;lda #8 ; 8 = 1200
+        lda #serial.baud_1200$
         sta serial.baud$
 
         jsr serial.open$ ; open5,2,0,chr$(8):poke665,73-(peek(678)*30)
@@ -674,3 +692,14 @@ inf1    text 'Press ', $1f, ' (End) to go exit.', console.newline$, console.null
 msg1    text "at&p1e1", serial.eot$
 requ    text $00, serial.eot$
 resp    word $0000
+
+;baudmsg text 'Enter the baud byte: ', console.null$
+;baud    byte $08
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;*=$c800
+;incbin "up9600.bin",2
+
+;*=$ce00
+;incbin "t2400.bin",2
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

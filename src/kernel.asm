@@ -89,11 +89,15 @@ incasm "font.asm"
 ;*=$c000 ; User code (-$cfff) *** Need to relocate the ZP Backup and the Graphics calc tables! ***
 ;#endregion
 
-;; up9600
-;*=$4800
-;incasm "up9600.asm"
+; up9600
+*=$4800
+incasm "up9600.asm"
 
-;*=$5e00
+;; t2400
+;*=$4e00
+; There appears to be bug in this routine where it adds $90 to each character
+; Also this changes the 1200 baud setting to be able go at 2400 baud, so the 
+; command to open the file is the same as it running at 1200 baud.
 ;incasm "t2400.asm"
 
 #region Assembly start-up code
@@ -9795,6 +9799,21 @@ serial.baud$   byte $08 ; 1200
 ;        1 1 0 1 7200 [NI)
 ;        1 1 1 0 9600 [NI] (14)
 ;        1 1 1 1 19200 [NI]
+;serial.baud_50$         = $01
+;serial.baud_75$         = $02
+;serial.baud_110$        = $03
+;serial.baud_135$        = $04
+;serial.baud_150$        = $05
+serial.baud_300$        = $06
+serial.baud_600$        = $07
+serial.baud_1200$       = $08
+;serial.baud_1800$       = $09
+;serial.baud_2400$       = $0a
+;serial.baud_3600$       = $0b
+;serial.baud_4800$       = $0c
+;serial.baud_7200$       = $0d
+serial.baud_9600$       = $0e
+;serial.baud_19200$       = $0f
 
 ;serial.open$
 
@@ -9863,11 +9882,19 @@ serial.close$
 serial.set_baud
         lda serial.baud$
         
-;        cmp #14 ; 14 = 9600
-;        bne @set_baud
-;        jsr UP9600.INIT
-;@set_baud
+;        cmp #serial.baud_2400$ ; 10 = 2400
+;        bne @not_2400
+;        jsr T2400.setup
+;        jmp @set_baud
+;@not_2400
 
+        cmp #serial.baud_9600$ ; 14 = 9600
+        bne @not_9600
+        jsr UP9600.INIT
+        jmp @set_baud
+@not_9600
+
+@set_baud
         sta $0293
         rts
 
