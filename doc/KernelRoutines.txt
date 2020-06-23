@@ -635,7 +635,7 @@ Notes:
 * When loading a sid/digi file into memory, it needs to be loaded into the memory range $900-$cfff.  Please note that this range can also have memory heap and program instructions loaded so check first before loading your audio file.
 * Playing sid files will slow any program running as they will invoke interrupts to send audio signals to the SID chip.
 * Before playing a sid file, you will need to confirm the values of the audio.sidinitaddress$, audio.sidplayaddress$, and audio.sidtimer$ variables.
-* Playing digi files will freeze any programming running as digi requires the entire chip to playback the audio and also the KERNAL routines are disabled.
+* Playing digi files will freeze any routine that uses any timing as digi requires the CIA chip to playback the audio. You can test the the audio.digifinished$ variable to know when the digi has finished playing. The KERNAL routines are disabled.
 * Before playing a digi file, you will need to confirm the values of the audio.digistartaddress$, audio.digiendaddress$, and audio.digisamplerate$ variables.
 * You can use 3rd party tools to create sid/digi sounds.
 
