@@ -908,6 +908,53 @@ Notes:
 * The Kernel currently only supports 1200 baud.
 
 ====================================================
+RAM EXPANSION UNIT (REU)
+====================================================
+
+----------
+Constants:
+----------
+
+----------
+Variables:
+----------
+
+----------
+Routines:
+----------
+
+reu.isinstalled$ ; Determines if there is a RAM expansion unit installed.
+	reu.isinstalled.value$ ; 1 byte (Out)
+
+reu.savedata$ ; Saves data from the C64 RAM to the RAM expansion unit.
+	reu.savedata.c64address$ ; 2 bytes (In)
+	reu.savedata.reuaddress$ ; 3 bytes (In)
+	reu.savedata.length$ ; 2 bytes (In)
+
+reu.loaddata$ ; Loads data from the RAM expansion unit to the C64 RAM.
+	reu.loaddata.c64address$ ; 2 bytes (In)
+	reu.loaddata.reuaddress$ ; 3 bytes (In)
+	reu.loaddata.length$ ; 2 bytes (In)
+
+reu.swapdata$ ; Swaps data between the C64 RAM and the RAM expansion unit.
+	reu.swapdata.c64address$ ; 2 bytes (In)
+	reu.swapdata.reuaddress$ ; 3 bytes (In)
+	reu.swapdata.length$ ; 2 bytes (In)
+	
+reu.comparedata$ ; Compares data between the C64 RAM and the RAM expansion unit.
+	reu.comparedata.c64address$ ; 2 bytes (In)
+	reu.comparedata.reuaddress$ ; 3 bytes (In)
+	reu.comparedata.length$ ; 2 bytes (In)
+	reu.comparedata.isequal$ ; 1 bytes (Out)
+
+----------
+Notes:
+----------
+
+* The size of REUs can vary in size but they have a maximum size of 16 MB.
+* The speed of transfering data using the REU is 5 times faster than using the conventional memory routines.
+
+====================================================
 GENERIC
 ====================================================
 

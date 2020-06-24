@@ -11075,13 +11075,118 @@
 11112  50B5  60                    RTS
 11113  50B6             
 11114  50B6             
-11115  50B6             ;ALIGN $100 ; ALIGN THE MAIN ENTRY POINT
-11116  50B6             *=$C000
-11117  C000             
-11118  C000                        
-11119  C000             
+11115  50B6             
+11116  50B6             
+11117  50B6             ; HTTPS://CODEBASE64.ORG/DOKU.PHP?ID=BASE:REU_PROGRAMMING
+11118  50B6             
+11119  50B6             REU.STATUS = $DF00
+11120  50B6             REU.COMMAND = $DF01
+11121  50B6             REU.C64BASE = $DF02
+11122  50B6             REU.REUBASE = $DF04
+11123  50B6             REU.TRANSLEN = $DF07
+11124  50B6             REU.IRQMASK = $DF09
+11125  50B6             REU.CONTROL = $DF0A
+11126  50B6             
+11127  50B6             REU.ISINSTALLED.VALUE$ = $FB ; 1 BYTE
+11128  50B6             REU.ISINSTALLED$ 
+11129  50B6  A9 00                 LDA #$00
+11130  50B8  85 FB                 STA REU.ISINSTALLED.VALUE$ ; SET DEFAULT VALUE
+11131  50BA             
+11132  50BA                        ; IF THE VALUE PUT INTO THE C64BASE ADDRESS STAYS THEN THERE IS A REU INSTALLED.
+11133  50BA  A9 01                 LDA #$01
+11134  50BC  8D 02 DF              STA REU.C64BASE
+11135  50BF  AD 02 DF              LDA REU.C64BASE
+11136  50C2  F0 02                 BEQ @DONE
+11137  50C4  85 FB                 STA REU.ISINSTALLED.VALUE$
+11138  50C6             @DONE
+11139  50C6  60                    RTS
+11140  50C7             
+11141  50C7             REU.TRANSFERDATA.C64ADDRESS = $FB ; 2 BYTES
+11142  50C7             REU.TRANSFERDATA.REUADDRESS = $8B ; 3 BYTES
+11143  50C7             REU.TRANSFERDATA.LENGTH = $FD ; 2 BYTES
+11144  50C7             REU.TRANSFERDATA.COMMAND = $2A ; 1 BYTE
+11145  50C7             REU.TRANSFERDATA 
+11146  50C7  A9 00                 LDA #0
+11147  50C9  8D 0A DF              STA REU.CONTROL ; TO MAKE SURE BOTH ADDRESSES ARE COUNTED UP
+11148  50CC             
+11149  50CC  A5 FB                 LDA REU.TRANSFERDATA.C64ADDRESS
+11150  50CE  8D 02 DF              STA REU.C64BASE
+11151  50D1  A5 FC                 LDA REU.TRANSFERDATA.C64ADDRESS+1
+11152  50D3  8D 03 DF              STA REU.C64BASE+1
+11153  50D6             
+11154  50D6  A5 8B                 LDA REU.TRANSFERDATA.REUADDRESS
+11155  50D8  8D 04 DF              STA REU.REUBASE
+11156  50DB  A5 8C                 LDA REU.TRANSFERDATA.REUADDRESS+1
+11157  50DD  8D 05 DF              STA REU.REUBASE+1
+11158  50E0  A5 8D                 LDA REU.TRANSFERDATA.REUADDRESS+2
+11159  50E2  8D 06 DF              STA REU.REUBASE+2
+11160  50E5             
+11161  50E5  A5 FD                 LDA REU.TRANSFERDATA.LENGTH
+11162  50E7  8D 07 DF              STA REU.TRANSLEN
+11163  50EA  A5 FE                 LDA REU.TRANSFERDATA.LENGTH+1
+11164  50EC  8D 08 DF              STA REU.TRANSLEN+1
+11165  50EF             
+11166  50EF  A5 2A                 LDA REU.TRANSFERDATA.COMMAND
+11167  50F1  8D 01 DF              STA REU.COMMAND
+11168  50F4             
+11169  50F4  60                    RTS
+11170  50F5             
+11171  50F5             REU.SAVEDATA.C64ADDRESS$ = $FB ; 2 BYTES
+11172  50F5             REU.SAVEDATA.REUADDRESS$ = $8B ; 3 BYTES
+11173  50F5             REU.SAVEDATA.LENGTH$ = $FD ; 2 BYTES
+11174  50F5             REU.SAVEDATA$ 
+11175  50F5  A9 90                 LDA #%10010000;  C64 -> REU WITH IMMEDIATE EXECUTION
+11176  50F7  85 2A                 STA REU.TRANSFERDATA.COMMAND
+11177  50F9  4C C7 50              JMP REU.TRANSFERDATA
+11178  50FC             
+11179  50FC             REU.LOADDATA.C64ADDRESS$ = $FB ; 2 BYTES
+11180  50FC             REU.LOADDATA.REUADDRESS$ = $8B ; 3 BYTES
+11181  50FC             REU.LOADDATA.LENGTH$ = $FD ; 2 BYTES
+11182  50FC             REU.LOADDATA$ 
+11183  50FC  A9 91                 LDA #%10010001;  REU -> C64 WITH IMMEDIATE EXECUTION
+11184  50FE  85 2A                 STA REU.TRANSFERDATA.COMMAND
+11185  5100  4C C7 50              JMP REU.TRANSFERDATA
+11186  5103             
+11187  5103             REU.SWAPDATA.C64ADDRESS$ = $FB ; 2 BYTES
+11188  5103             REU.SWAPDATA.REUADDRESS$ = $8B ; 3 BYTES
+11189  5103             REU.SWAPDATA.LENGTH$ = $FD ; 2 BYTES
+11190  5103             REU.SWAPDATA$ 
+11191  5103  A9 92                 LDA #%10010010;  C64 <-> REU WITH IMMEDIATE EXECUTION
+11192  5105  85 2A                 STA REU.TRANSFERDATA.COMMAND
+11193  5107  4C C7 50              JMP REU.TRANSFERDATA
+11194  510A             
+11195  510A             REU.COMPAREDATA.C64ADDRESS$ = $FB ; 2 BYTES
+11196  510A             REU.COMPAREDATA.REUADDRESS$ = $8B ; 3 BYTES
+11197  510A             REU.COMPAREDATA.LENGTH$ = $FD ; 2 BYTES
+11198  510A             REU.COMPAREDATA.ISEQUAL$ = $02 ; 1 BYTES
+11199  510A             REU.COMPAREDATA$ 
+11200  510A  A9 00                 LDA #$00
+11201  510C  85 02                 STA REU.COMPAREDATA.ISEQUAL$ ; SET DEFAULT VALUE
+11202  510E             
+11203  510E  A9 93                 LDA #%10010011;  C64 - REU WITH IMMEDIATE EXECUTION
+11204  5110  85 2A                 STA REU.TRANSFERDATA.COMMAND
+11205  5112  20 C7 50              JSR REU.TRANSFERDATA
+11206  5115             
+11207  5115                        ;BIT 5:     FAULT  (1 = BLOCK VERIFY ERROR)
+11208  5115                        ;           SET IF A DIFFERENCE BETWEEN C64- AND REU-MEMORY AREAS WAS FOUND
+11209  5115                        ;           DURING A COMPARE-COMMAND.
+11210  5115  AD 00 DF              LDA REU.STATUS
+11211  5118  29 20                 AND #%00100000
+11212  511A  D0 04                 BNE @DONE ; IF NOT EQUAL TO 0 THEN THERE WAS A FAULT (DIFFERENCE)
+11213  511C  A9 01                 LDA #$01
+11214  511E  85 02                 STA REU.COMPAREDATA.ISEQUAL$
+11215  5120             @DONE
+11216  5120  60                    RTS
+11217  5121             
+11218  5121             
+11219  5121             
+11220  5121             ;ALIGN $100 ; ALIGN THE MAIN ENTRY POINT
+11221  5121             *=$C000
+11222  C000             
+11223  C000                        
+11224  C000             
 
-******* 371 Label(s) *******
+******* 377 Label(s) *******
 audio._digioff = $3B09 
 audio._digion = $3AB7 
 audio.beep$ = $38D2 
@@ -11356,6 +11461,12 @@ mouse.oldy = $40CD
 printer.error$ = $4069 
 printer.prev_devcice = $4068 
 printer.printstr$ = $406A 
+reu.comparedata$ = $510A 
+reu.isinstalled$ = $50B6 
+reu.loaddata$ = $50FC 
+reu.savedata$ = $50F5 
+reu.swapdata$ = $5103 
+reu.transferdata = $50C7 
 serial.baud$ = $4138 
 serial.close$ = $4139 
 serial.discard_byte$ = $4135 
@@ -11454,7 +11565,7 @@ UP9600.SAVBYTE = $4814
 UP9600.STIME = $4812 
 UP9600.UPFLAG = $4813 
 
-******* 98 Unused label(s) *******
+******* 103 Unused label(s) *******
 @again
 @Alpha1
 @Alpha12
@@ -11516,6 +11627,8 @@ UP9600.UPFLAG = $4813
 @DoCheck
 @doEor
 @doEor
+@done
+@done
 @done
 @done
 @done
@@ -11884,6 +11997,11 @@ memory.deallocate$
 memory.swap16$
 mouse.getstate$
 printer.printstr$
+reu.comparedata$
+reu.isinstalled$
+reu.loaddata$
+reu.savedata$
+reu.swapdata$
 serial.close$
 serial.open$
 serial.recv$
@@ -11902,7 +12020,7 @@ UP9600.PRINT
 UP9600.RSOUT3
 UP9600.STIME
 
-******* 502 Variable(s) *******
+******* 527 Variable(s) *******
 audio._digiabuffer  = $3B06
 audio._digiybuffer  = $3B08
 audio.attackhigh$  = $0080
@@ -12350,6 +12468,31 @@ printer.upper_case$  = $0091
 printererror.ok$  = $0000
 printererror.open_error$  = $0001
 printererror.print_error$  = $0002
+reu.c64base  = $DF02
+reu.command  = $DF01
+reu.comparedata.c64address$  = $00FB
+reu.comparedata.isequal$  = $0002
+reu.comparedata.length$  = $00FD
+reu.comparedata.reuaddress$  = $008B
+reu.control  = $DF0A
+reu.irqmask  = $DF09
+reu.isinstalled.value$  = $00FB
+reu.loaddata.c64address$  = $00FB
+reu.loaddata.length$  = $00FD
+reu.loaddata.reuaddress$  = $008B
+reu.reubase  = $DF04
+reu.savedata.c64address$  = $00FB
+reu.savedata.length$  = $00FD
+reu.savedata.reuaddress$  = $008B
+reu.status  = $DF00
+reu.swapdata.c64address$  = $00FB
+reu.swapdata.length$  = $00FD
+reu.swapdata.reuaddress$  = $008B
+reu.transferdata.c64address  = $00FB
+reu.transferdata.command  = $002A
+reu.transferdata.length  = $00FD
+reu.transferdata.reuaddress  = $008B
+reu.translen  = $DF07
 serial.baud_1200$  = $0008
 serial.baud_300$  = $0006
 serial.baud_600$  = $0007
@@ -12405,7 +12548,7 @@ UP9600.SNDPTR  = $00F9
 UP9600.WRRPTR  = $029B
 UP9600.WRSPTR  = $029E
 withsidplayer  = $0000
-******* -167 Unused variables(s) *******
+******* -156 Unused variables(s) *******
 audio.attackhigh$
 audio.attacklow$
 audio.attacklowest$
@@ -12579,6 +12722,19 @@ printer.carriage_return$
 printer.line_feed$
 printer.lower_case$
 printer.upper_case$
+reu.comparedata.c64address$
+reu.comparedata.length$
+reu.comparedata.reuaddress$
+reu.irqmask
+reu.loaddata.c64address$
+reu.loaddata.length$
+reu.loaddata.reuaddress$
+reu.savedata.c64address$
+reu.savedata.length$
+reu.savedata.reuaddress$
+reu.swapdata.c64address$
+reu.swapdata.length$
+reu.swapdata.reuaddress$
 serial.baud_1200$
 serial.baud_300$
 serial.baud_600$

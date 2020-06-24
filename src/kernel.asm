@@ -10234,6 +10234,111 @@ convert.ascii2str$
         rts
 
 
+#region Ram Expansion Unit (REU)
+
+; https://codebase64.org/doku.php?id=base:reu_programming
+
+reu.status   = $df00
+reu.command  = $df01
+reu.c64base  = $df02
+reu.reubase  = $df04
+reu.translen = $df07
+reu.irqmask  = $df09
+reu.control  = $df0a
+
+reu.isinstalled.value$ = $fb ; 1 byte
+reu.isinstalled$
+        lda #$00
+        sta reu.isinstalled.value$ ; set default value
+
+        ; If the value put into the c64base address stays then there is a REU installed.
+        lda #$01
+        sta reu.c64base
+        lda reu.c64base
+        beq @done
+        sta reu.isinstalled.value$
+@done
+        rts
+
+reu.transferdata.c64address = $fb ; 2 bytes
+reu.transferdata.reuaddress = $8b ; 3 bytes
+reu.transferdata.length = $fd ; 2 bytes
+reu.transferdata.command = $2a ; 1 byte
+reu.transferdata
+        lda #0
+        sta reu.control ; to make sure both addresses are counted up
+
+        lda reu.transferdata.c64address
+        sta reu.c64base
+        lda reu.transferdata.c64address+1
+        sta reu.c64base+1
+
+        lda reu.transferdata.reuaddress
+        sta reu.reubase
+        lda reu.transferdata.reuaddress+1
+        sta reu.reubase+1
+        lda reu.transferdata.reuaddress+2
+        sta reu.reubase+2
+
+        lda reu.transferdata.length
+        sta reu.translen
+        lda reu.transferdata.length+1
+        sta reu.translen+1
+
+        lda reu.transferdata.command
+        sta reu.command
+
+        rts
+
+reu.savedata.c64address$ = $fb ; 2 bytes
+reu.savedata.reuaddress$ = $8b ; 3 bytes
+reu.savedata.length$ = $fd ; 2 bytes
+reu.savedata$
+        lda #%10010000;  C64 -> REU with immediate execution
+        sta reu.transferdata.command
+        jmp reu.transferdata
+
+reu.loaddata.c64address$ = $fb ; 2 bytes
+reu.loaddata.reuaddress$ = $8b ; 3 bytes
+reu.loaddata.length$ = $fd ; 2 bytes
+reu.loaddata$
+        lda #%10010001;  REU -> C64 with immediate execution
+        sta reu.transferdata.command
+        jmp reu.transferdata
+
+reu.swapdata.c64address$ = $fb ; 2 bytes
+reu.swapdata.reuaddress$ = $8b ; 3 bytes
+reu.swapdata.length$ = $fd ; 2 bytes
+reu.swapdata$
+        lda #%10010010;  C64 <-> REU with immediate execution
+        sta reu.transferdata.command
+        jmp reu.transferdata
+
+reu.comparedata.c64address$ = $fb ; 2 bytes
+reu.comparedata.reuaddress$ = $8b ; 3 bytes
+reu.comparedata.length$ = $fd ; 2 bytes
+reu.comparedata.isequal$ = $02 ; 1 bytes
+reu.comparedata$
+        lda #$00
+        sta reu.comparedata.isequal$ ; set default value
+
+        lda #%10010011;  C64 - REU with immediate execution
+        sta reu.transferdata.command
+        jsr reu.transferdata
+
+        ;Bit 5:     FAULT  (1 = block verify error)
+        ;           Set if a difference between C64- and REU-memory areas was found
+        ;           during a compare-command.
+        lda reu.status
+        and #%00100000
+        bne @done ; If not equal to 0 then there was a fault (difference)
+        lda #$01
+        sta reu.comparedata.isequal$
+@done
+        rts
+
+#endregion
+
 ;align $100 ; Align the Main entry point
 *=$c000
 
