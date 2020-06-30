@@ -872,6 +872,10 @@ SERIAL
 Constants:
 ----------
 
+serial.baud_300$
+serial.baud_600$
+serial.baud_1200$
+serial.baud_9600$
 serial.eot$ = $ff
 
 ----------
@@ -905,7 +909,7 @@ Notes:
 * Set serial.send_eot$ if you want the serial.send$ routine to always send byte $0d after each call.
 * Set serial.recv_eot$ if you want the serial.recv$ routine to always return when it encounters byte $0d.
 * If the routines are not able to connect to the serial device the C64 will freeze.
-* The Kernel currently only supports 1200 baud.
+* The Kernel currently only supports the following baud rates: 300, 600, 1200, and 9600.
 
 ====================================================
 RAM EXPANSION UNIT (REU)
@@ -955,6 +959,39 @@ Notes:
 * The speed of transfering data using the REU is 5 times faster than using the conventional memory routines.
 
 ====================================================
+Interrupt Request (IRQ)
+====================================================
+
+----------
+Constants:
+----------
+
+----------
+Variables:
+----------
+
+----------
+Routines:
+----------
+
+irq.install$ ; Installs a maskable IRQ handler.
+	irq.install.address$ ; 2 bytes (In)
+
+irq.uninstall$ ; Uninstalls the previously installed IRQ.
+
+irq.enable$ ; Enables the IRQ handler.
+
+irq.disable$ ; Disables the IRQ handler.
+
+----------
+Notes:
+----------
+
+* The IRQ is maskable which means that the CPU can disable/enable it using the "sei"/"cli" opcodes.
+* The routines that call the IRQ handler will automattically restore the values of the A/X/Y registers between calls.
+* After you call irq.install$ the IRQ handler will automattically be enabled. Likewise, after you call irq.disable$ the IRQ handler will be disabled.
+
+====================================================
 GENERIC
 ====================================================
 
@@ -987,7 +1024,7 @@ Variables:
 Routines:
 ----------
 
-kernel.halt$ ; Pushs the C64 into a halt state, reboot will be required to get out of this state
+kernel.halt$ ; Places the C64 into a halt state, reboot will be required to get out of this state
 
 kernel.reset$ ; Performs a soft reset of the C64.
  
