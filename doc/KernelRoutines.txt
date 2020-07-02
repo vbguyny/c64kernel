@@ -323,6 +323,11 @@ math.subtract16$ ; Gets the subtration of two 16 bit integers (minuend − subtr
 	math.subtract16.subtrahend$ ; 2 bytes (In)
 	math.subtract16.difference$ ; 2 bytes (Out)
 
+math.subtract24$ ; Gets the subtration of two 24 bit integers (minuend − subtrahend = difference)
+	math.subtract24.menuend$ ; 3 bytes (In)
+	math.subtract24.subtrahend$ ; 3 bytes (In)
+	math.subtract24.difference$ ; 3 bytes (Out)
+
 math.subtract32$ ; Gets the subtration of two 32 bit integers (minuend − subtrahend = difference)
 	math.subtract32.menuend$ ; 4 bytes (In)
 	math.subtract32.subtrahend$ ; 4 bytes (Out)
@@ -457,6 +462,10 @@ graphics.settextmode$ ; Puts screen into mode for displaying text
 graphics.sethiresmode$ ; Sets graphics mode to display a hires image
 
 graphics.setmulticolormode$ ; Sets graphics mode to display a multicolor image
+
+graphics.enablemulticolormode$ ; Enables the multi-color mode of the VIC
+
+graphics.disablemulticolormode$ ; Disables the multi-color mode of the VIC
 
 graphics.setpixel$ ; Draw a pixel onto the screen
 	graphics.setpixel.color$ ; 1 byte (In)
@@ -957,6 +966,8 @@ Notes:
 
 * The size of REUs can vary in size but they have a maximum size of 16 MB.
 * The speed of transfering data using the REU is 5 times faster than using the conventional memory routines.
+* IRQs are deffered while an REU transfer is in progress.
+* The REU routines will automattically take handle transferring data that is at the edge of a 64KB boundary. For example, trying to transfer 1024 KB of data from the REU address $01FF00 will correctly transfer from $01FF00-$0202FF.
 
 ====================================================
 Interrupt Request (IRQ)
@@ -969,6 +980,8 @@ Constants:
 ----------
 Variables:
 ----------
+
+irq.raterline$ ; 1 byte, the raster line that the IRQ will execute.
 
 ----------
 Routines:

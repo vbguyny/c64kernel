@@ -1,0 +1,84 @@
+Using VBGuyNY's C64 Kernel and various tools, you can create video that is composed of a collection of hundreds of multicolor stills and 4-bit, 4 kHz digital audio. The C64 by itself is unable to perform such of a feat but with the assistance of the RAM Expansion Module (REU) it is possible.  With the REU you can store up to 16 MB of data which allows you to playback upto roughly 3 minutes of uncompressed video. Also the REU transfers data at a much faster rate (1 MB/s) compared to manually copying data in the C64 RAM using traditional 6502 assembly code.
+
+Example: https://youtu.be/JgMXZBKEMyA
+
+In order to make a movie in C64 follow the steps below:
+
+* Requirments:
+	CBM prg Studio - https://www.ajordison.co.uk/
+	VICE - https://vice-emu.sourceforge.io/
+	VLC - https://www.videolan.org/vlc/
+	RetroPixels - https://www.npmjs.com/package/retropixels?activeTab=readme
+	SoX - http://sox.sourceforge.net/
+	Wav to Digi - https://csdb.dk/release/?id=6601
+	ReuImport - https://github.com/vbguyny/c64kernel/tree/master/bin
+	
+0. Start VLC > CTRL+O > I/O Extensions > RAM Expansion Module 
+	Check "Enable RAM Expansion Module cartridge"
+	Select 16 MB 
+	Enter REU Image file name
+	Uncheck "Write image on image detach/emulator quit"
+	Close out of VICE (otherwise, the changes from ReuImport may not save)
+	
+1. Download the video using YouTube ripper into an MP4 file.
+
+2. Download the audio using YouTube ripper into an MP3 file.
+
+3. Export each 3rd frame of the video from step #1 to PNG using VLC: https://turbofuture.com/computers/How-to-take-batch-screenshots-or-screencaps-in-VLC-Media-Player
+	You will need to re-open VLC for the changes to take affect.
+	Don't forget to uncheck the video filter before moving on.
+
+4. Patch batch file to convert each of the frames to KLA files:
+	FOR %%G IN (scene*.png) DO call :DoConv %%G %%~nG
+	goto :eof
+
+	:DoConv
+	set InputFile=%1
+	set InputFileNoExt=%2
+	call retropixels -p pepto -c rgb %InputFile% %InputFileNoExt%.kla
+	goto :eof
+	
+5. Patch batch file to import the KLA files into the REU file:
+	REM Starting REU address of video data (Must match the PRG)
+	set /a i=262144
+	FOR %%G IN (*.kla) DO call :DoReuImport %%G
+	pause
+	goto :eof
+
+	:DoReuImport
+	set KlaFile=%1
+	ReuImport.exe file.reu %KlaFile% %i% 2
+	set /a i=i+10001
+	goto :eof
+
+	pause
+	
+6. Convert the MP3 file from step #2 to WAV using SoX: "c:\Program Files (x86)\sox-14-4-2\sox.exe" input.mp3 -b 16 -c 1 -r 44100 -S output%1.wav vol +20 trim 0 5 : newfile : restart
+
+7. Convert each WAV file to a PRG using "Wav to Digi".
+
+8. Patch batch file to import the PRG files into the REU file:
+	REM Starting REU address of audio data (Must match the PRG)
+	set /a i=0
+	FOR %%G IN (*.PRG) DO call :DoReuImport %%G
+	pause
+	goto :eof
+
+	:DoReuImport
+	set InputFile=%1
+	ReuImport.exe file.reu %InputFile% %i% 257
+	set /a i=i+11264
+	goto :eof
+
+	pause
+
+9. Open the movie1.asm (see the src directory) to modify the following values as needed:
+	maxvcount       = 815 ; The max number of frames + 1
+	maxwcount       = 8   ; The video frame delay
+	irqrasterline   = 114 ; Adjust if you are experiencing frame tearing
+	digilength        = $2c00 ; The length of each audio sample (minus 257 bytes)
+	digisamplerate    = $00e0 ; The audio sample delay
+	reuvmem         byte $00, $00, $04 ; The starting video REU address
+	reuamem         byte $00, $00, $00 ; The starting audio REU address
+
+10. Compile your program and run it in VICE.

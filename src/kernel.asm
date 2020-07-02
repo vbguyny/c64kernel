@@ -2130,6 +2130,23 @@ console.readint.copymem
 @End
         rts
 
+math.subtract24.menuend$ = $80 ; 3 bytes
+math.subtract24.subtrahend$ = $83 ; 3 bytes
+math.subtract24.difference$ = $86 ; 4 bytes
+
+math.subtract24$
+        sec                             ; set carry for borrow purpose
+        lda math.subtract24.menuend$
+        sbc math.subtract24.subtrahend$                      ; perform subtraction on the LSBs
+        sta math.subtract24.difference$
+        lda math.subtract24.menuend$+1                      ; do the same for the MSBs, with carry
+        sbc math.subtract24.subtrahend$+1                      ; set according to the previous result
+        sta math.subtract24.difference$+1
+        lda math.subtract24.menuend$+2
+        sbc math.subtract24.subtrahend$+2                      ; perform subtraction on the LSBs
+        sta math.subtract24.difference$+2
+        rts
+
 align $100
 
 console.getkey.BufferOld  byte $ff, $ff, $ff
@@ -5352,6 +5369,7 @@ graphics.sethiresmode$
         inx 
         bne @loop 
 
+graphics.disablemulticolormode$
         ; Disable Multi-Color Mode
         lda $d016
         and #%11101111 ; Bit #4: 0 = Multicolor mode off.
@@ -5388,6 +5406,7 @@ graphics.setmulticolormode$
         inx 
         bne @loop 
 
+graphics.enablemulticolormode$
         ; EnableMulti-Color Mode
         lda $d016
         ora #%00010000 ; Bit #4: 1 = Multicolor mode on.
@@ -10272,16 +10291,105 @@ reu.transferdata.c64address = $fb ; 2 bytes
 reu.transferdata.reuaddress = $8b ; 3 bytes
 reu.transferdata.length = $fd ; 2 bytes
 reu.transferdata.command = $2a ; 1 byte
-;reu.transferdata.fault  byte $00
+reu.transferdata.orglength = $57 ; 2 bytes
 reu.transferdata
 
-;        lda reu.transferdata.fault
-;        beq @no_fault
-;        rts
-;@no_fault
-;        lda #1
-;        sta reu.transferdata.fault
+        ; We need to determine whether or not the reubase 3rd and highest byte
+        ; is going to wrap, if so we need to perform a second transfer
+        lda reu.transferdata.reuaddress
+        sta math.add24.addend1$
+        lda reu.transferdata.reuaddress+1
+        sta math.add24.addend1$+1
+        lda reu.transferdata.reuaddress+2
+        sta math.add24.addend1$+2
+        lda reu.transferdata.length
+        sta math.add24.addend2$
+        lda reu.transferdata.length+1
+        sta math.add24.addend2$+1
+        lda #0
+        sta math.add24.addend2$+2
+        jsr math.add24$
+        lda math.add24.sum$+2
+        cmp reu.transferdata.reuaddress+2
+        bne @wrapped
+        jmp reu.transferdata.setregisters
+@wrapped
 
+        ; At this point there will be a wrap so we need to perform
+        ; two separate transfers
+
+        ; Copy the original length
+        lda reu.transferdata.length
+        sta reu.transferdata.orglength
+        lda reu.transferdata.length+1
+        sta reu.transferdata.orglength+1
+
+        ; $010000 - rue.transferdata.reuaddress(16 bits) = 1st new length
+        lda #$00
+        sta math.subtract24.menuend$
+        sta math.subtract24.menuend$+1
+        lda #$01
+        sta math.subtract24.menuend$+2
+        lda reu.transferdata.reuaddress
+        sta math.subtract24.subtrahend$
+        lda reu.transferdata.reuaddress+1
+        sta math.subtract24.subtrahend$+1
+        lda #$00
+        sta math.subtract24.subtrahend$+2
+        jsr math.subtract24$
+        lda math.subtract24.difference$
+        sta reu.transferdata.length
+        lda math.subtract24.difference$+1
+        sta reu.transferdata.length+1
+        
+        ; Perform the first transfer
+        jsr reu.transferdata.setregisters
+        
+
+        ; The C64 will do this for us!
+;        ; Need to increase reu.transferdata.c64address by 1st new length
+;        lda reu.c64base
+;        sta math.add16.addend1$
+;        lda reu.c64base+1
+;        sta math.add16.addend1$+1
+;        lda reu.translen
+;        sta math.add16.addend2$
+;        lda reu.translen+1
+;        sta math.add16.addend2$+1
+;        jsr math.add16$
+;        lda math.add16.sum$
+;        sta reu.c64base
+;        lda math.add16.sum$+1
+;        sta reu.c64base+1
+        lda reu.c64base
+        sta reu.transferdata.c64address
+        lda reu.c64base+1
+        sta reu.transferdata.c64address+1
+
+        ; original length - 1st new length = 2nd new length
+        lda reu.transferdata.orglength
+        sta math.subtract16.menuend$
+        lda reu.transferdata.orglength+1
+        sta math.subtract16.menuend$+1
+        lda reu.transferdata.length
+        sta math.subtract16.subtrahend$
+        lda reu.transferdata.length+1
+        sta math.subtract16.subtrahend$+1
+        jsr math.subtract16$
+        lda math.subtract16.difference$
+        sta reu.transferdata.length
+        lda math.subtract16.difference$+1
+        sta reu.transferdata.length+1
+
+        ; Set the reu.transferdata.reuaddress to the next 24-bit page
+        lda #0
+        sta reu.transferdata.reuaddress
+        sta reu.transferdata.reuaddress+1
+        inc reu.transferdata.reuaddress+2
+
+        ; Fall through to the code below
+
+reu.transferdata.setregisters
         lda #0
         sta reu.control ; to make sure both addresses are counted up
 
@@ -10302,11 +10410,10 @@ reu.transferdata
         lda reu.transferdata.length+1
         sta reu.translen+1
 
+;reu.transferdata.setcommand
+
         lda reu.transferdata.command
         sta reu.command
-
-;        lda #0
-;        sta reu.transferdata.fault
 
         rts
 
@@ -10361,6 +10468,9 @@ reu.comparedata$
 
 #region Interrupt Requests (IRQ)
 
+;irq.raterline$ byte 210
+irq.raterline$ byte 140
+
 irq.address     word $000
 irq.oldaddress  word $000
 irq.install.address$ = $fb ; 2 bytes
@@ -10389,8 +10499,7 @@ irq.install$
         lda #$01   ;this is how to tell the VICII to generate a raster interrupt
         sta $d01a
 
-        ;lda #210   ;this is how to tell at which rasterline we want the irq to be triggered
-        lda #140     ; Raster line to start band
+        lda irq.raterline$ ;this is how to tell at which rasterline we want the irq to be triggered
         sta $d012
 
         lda #$1b   ;as there are more than 256 rasterlines, the topmost bit of $d011 serves as
@@ -10425,8 +10534,7 @@ irq.uninstall$
         lda #$00   ;this is how to tell the VICII to generate a raster interrupt
         sta $d01a
 
-        ;lda #210   ;this is how to tell at which rasterline we want the irq to be triggered
-        lda #140     ; Raster line to start band
+        lda irq.raterline$ ;this is how to tell at which rasterline we want the irq to be triggered
         sta $d012
 
         lda #$1b   ;as there are more than 256 rasterlines, the topmost bit of $d011 serves as
