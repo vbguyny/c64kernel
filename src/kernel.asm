@@ -1844,6 +1844,11 @@ console.dec_memaddress.end
 
 ;align $100
 
+console.bordercoloraddress$             = $d020
+console.backgroundcolor0address$        = $d021
+console.backgroundcolor1address$        = $d022
+console.backgroundcolor2address$        = $d023
+
 console.setbackgroundcolor.color$ = $73 ; 1 byte
 console.setbackgroundcolor$
         lda console.setbackgroundcolor.color$
@@ -2145,6 +2150,18 @@ math.subtract24$
         lda math.subtract24.menuend$+2
         sbc math.subtract24.subtrahend$+2                      ; perform subtraction on the LSBs
         sta math.subtract24.difference$+2
+        rts
+
+kernel.isntsc.value$ = $02 ; 1 byte
+kernel.isntsc$
+        lda $02a6
+        beq @set1
+        lda #0
+        jmp @set
+@set1
+        lda #1
+@set
+        sta kernel.isntsc.value$        
         rts
 
 align $100
@@ -4015,6 +4032,12 @@ serial.open$
         rts
 
 
+kernel.ispal.value$ = $02 ; 1 byte
+kernel.ispal$
+        lda $02a6
+        sta kernel.ispal.value$
+        rts
+
 
 ; Skip $2000-$2800 for custom character set
 
@@ -5265,11 +5288,6 @@ graphics.multibgcoloraddress     = $d021
 
 graphics.imageaddress$           = $6000
 
-;TODO change the addresses below accordingly:
-;graphics.Y_Table_Lo              = $c100
-;graphics.Y_Table_Hi              = $c200
-;graphics.X_Table                 = $c300
-;graphics.BitMask                 = $c400
 graphics.Y_Table_Lo              = graphics.Y_Table_Lo_address
 graphics.Y_Table_Hi              = graphics.Y_Table_Hi_address
 graphics.X_Table                 = graphics.X_Table_address
@@ -5663,7 +5681,6 @@ graphics.drawchr
         rol
         sta (graphics.drawchr.chraddress),y
 
-TODO Create table to look up the charactermap address by console.writechr.char$        
         ; Get the memory address of the character
         ; Address = font.memoryaddress + (chr * 8)
         lda graphics.drawchr.chr
@@ -10471,8 +10488,8 @@ reu.comparedata$
 ;irq.raterline$ byte 210
 irq.raterline$ byte 140
 
-irq.address     word $000
-irq.oldaddress  word $000
+irq.address     word $0000
+irq.oldaddress  word $0000
 irq.install.address$ = $fb ; 2 bytes
 irq.install$
         sei        ;disable maskable IRQs
@@ -10502,7 +10519,9 @@ irq.install$
         lda irq.raterline$ ;this is how to tell at which rasterline we want the irq to be triggered
         sta $d012
 
-        lda #$1b   ;as there are more than 256 rasterlines, the topmost bit of $d011 serves as
+        lda $d011
+        and #%01111111
+        ;lda #$1b   ;as there are more than 256 rasterlines, the topmost bit of $d011 serves as
         sta $d011  ;the 9th bit for the rasterline we want our irq to be triggered.
                    ;here we simply set up a character screen, leaving the topmost bit 0.
 
@@ -10537,7 +10556,9 @@ irq.uninstall$
         lda irq.raterline$ ;this is how to tell at which rasterline we want the irq to be triggered
         sta $d012
 
-        lda #$1b   ;as there are more than 256 rasterlines, the topmost bit of $d011 serves as
+        lda $d011
+        and #%01111111
+        ;lda #$1b   ;as there are more than 256 rasterlines, the topmost bit of $d011 serves as
         sta $d011  ;the 9th bit for the rasterline we want our irq to be triggered.
                    ;here we simply set up a character screen, leaving the topmost bit 0.
 

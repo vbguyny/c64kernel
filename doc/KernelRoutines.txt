@@ -1040,6 +1040,12 @@ Routines:
 kernel.halt$ ; Places the C64 into a halt state, reboot will be required to get out of this state
 
 kernel.reset$ ; Performs a soft reset of the C64.
+
+kernel.ispal$ ; Determines whether or not the C64 is a PAL machine.
+	kernel.ispal.value$ ; 1 byte (Out)
+
+kernel.isntsc$ ; Determines whether or not the C64 is a NTSC machine.
+	kernel.isntsc.value$ ; 1 byte (Out)
  
 convert.ascii2str$ ; Converts a string of ASCII characters to a string of C4 Kernel characters
 	convert.ascii2str.ascii$ ; 2 bytes (In/Out)
