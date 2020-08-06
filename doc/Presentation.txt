@@ -1,0 +1,285 @@
+Slide 1 (30 seconds)
+	Hello everyone!  My name is Michael Battaglia and my presentation is going to be about Developing for the Commodore 64.
+	The point of this presentation is to show anyone how to get started in programming for Retro computers, specifically the Commodore 64.
+	And for those of you that any ready know how program in assembly for the C64 you can think of this presentation as a refresher and you might learn something new.
+
+Slide 2 (45 seconds)
+	Here is what I plan on covering during this presentation.
+	First I am going talk about myself, who I am.
+	Then I am going to explain why you would want to program for the Commodore 64 in the first place.
+	After that I am going to talk about more of the features and technical details of the C64.
+	Then I am going to discuss what tools and knowledge you would need in order to get started with programming.
+	After that we are going to look at some examples together.
+	Then I am going to outline the next steps that you should take after you have the basics down.
+	And lastly we will have some Q&A.
+
+Slide 3 (2:30)
+	I would like to take the time to discuss a little bit about myself.
+	I started getting into computers at a very early age as my first computer that I ever used was the Texas Instrutments TI-99 around the age of 5. I started learning BASIC.  Admittly I didn't know what I was doing as I was copying programs off of books and typing them into the machine.  And my programs would be erased as soon as I powered off the computer.
+	But then as I entered elementary school, I began to play around with the Commodore 64.  I mostly used it to play games but I did start to learn how to make programs using BASIC.  Looking back, my parents probably spent alot of money on the machine as we also had the 1541 disk drive.  This allowed me to save my programs on 5 and a half inch floppy disks and allowed me to work much longer on my programs as I did all the way through 7th grade.
+	By this time I was in Junior High and I built my first PC.  It ran Windows 3.1 and DOS 6.22 on a 486 40 Mhz Intel processor with 4 MB of RAM and a 900 MB hard disk.  At this point I dived into programming for the PC.  I first started learning QBASIC and C++ but then I quickly moved towards Visual Basic 6. And from that point on I continued programming in Visual Basic 6 to this very day.
+	For the rest of the 90s I spent time upgrading my PC every year or two like most other people at the time.
+	But by the early 2000s I was in college and then I was programming in other languages, such as C++, Java, and C# .  I also began to learn how to program for mobile devices such as the PalmOS and Windows CE.
+	Then in the last decade I have been working in the industry as a Full Stack developer programming in modern envorniments including Desktop, Web, and Android/iOS.  However, during my down time, I began to teach myself how to program retro machines either using X86 or 6502 assembly.
+
+Slide 4 (1:45)
+	Now let's take some time to discuss the reasons why you might be interested in programming for the Commodore 64.
+	The first point is that 8-bit computing never really when away.
+	You can find emulators for almost every 8-bit computer and console that has ever existed.  This allows people to run many of the programs and games that were used on the original machines on modern PCs.
+	Also in the past few years companies have re-released their retro devices so that people can relive what it was like to use these devices on an actual TV. Nintendo released the NES Classic a few years back and even a company re-released the C64, twice actually!  The C64 Mini was similar to the NES classic where it was a much smaller form factor running an emulator inside the device.  And last year a newer version of the C64 came out called the Maxi which had almost the same form factor as the original C64.  In fact not only can you play games on it but you can write programs on it almost the same way that you would with the actual device.
+	Another reason is to way you would want to program for the C64 specifically, is that it has a huge user base.  It is known for being the  highest-selling single computer of all time selling between 12 and 17 million units world-wide.
+	And lastly, many new games and demos are still being created to this very day!
+	Now I am going to highlight a few examples in the next slides.
+
+Slide 5 (00:45)
+	This first game is called "Planet X2".
+	It is a Real Time Stageory game, similar to StarCraft, where you need to mine resource, make buildings and vechiles, and destory the enemy base.  It was created by David Murray aka the 8-bit guy and released back in 2017.
+	And here is a quick screen recording of the actual game play.
+	
+Slide 6 (00:45)
+	The next game, everyone is probably familiar with is, "Super Mario Bros 64".
+	Although the Commodore 64 did have its own port of the game back in the 80s this version was created by a fan of the genre that goes by the name "ZeroPaige" and released it back in 2019.  It took the person 7 years to complete the game and as you can see it looks amazing. However, shortly after its released Nintendo sent the person a take-down notice so its very hard to find a copy of this game. But there is a play-through video available on YouTube if you are interested in seeing the full game.
+	
+Slide 7 (01:00)
+	The last game I want to highlight is called "Fix-It Felix Jr".
+	If anyone is familiar with the Pixar movie "Wreck-It Ralph" then you know what this game is about. This game was released by a trio of retro programmers in 2020.
+	Basically, you are a character called Felix Jr and your job is to repair the apartment building while it is being recked by Ralph.  Not only does the game play great and look fanastic it also has the voices of Ralph saying is famous catch phrase "I'm gonn'a wreck it"!
+	
+	Again, these titles are new games that came out in the past few years for the Commodore 64.  You are able to play either on an emulator or an actual Commodore 64 computer.
+
+Slide 8 (3:00)
+	Now the next few slides are going to cover some of the main information and features of the Commodore 64.
+	
+	The Commodore 64 was released by Commodore Business Machines back in 1982.  It sold for 595 US dollars, however, the price did drop to roughly $300 in 1983.
+	It ran with a 8-bit 6510 CPU (which was a variant of the 6502 chip) running at approximattely 1 Mhz.  The speed of the CPU varied depending what region you bought the computer.  For instance, NTSC in North America ran slightly faster than the PAL version.
+	It also had 64 killobytes of RAM, which is the reason why it was called the Commodore 64.  It also had 20 killobytes of ROM which holds the character map, BASIC V2, and the C64 KERNAL.
+	The CPU had an bunch of hardware registers including, the accumlater (A) which did all of the math operations against, two general registers (X&Y), a Process Status register (P) which held the state of the previous instruction, Program Counter register (PC) which is the memory address of which instruction to execute, and the Stack Pointer (SP).
+	For this presentation we are only going to look at the A, X, Y, and P registers.
+	
+	The Commodore 64 was also equiped with a video chip called VIC-II, which stands for Video Interface Chip II.
+	It supported up to 16 colors as well as 8 hardware sprites and used a mapped memory scheme.
+	The VIC-II had mutliple modes for displaying graphics but the two most common where character mode and HiRes mode.  In character mode you were able to have a grid of 8x8 pixel characters consisting of 40 columns and 25 rows.
+	In the HiRes mode you were are able to display graphics in a resolution of 320 by 200 pixels.
+	Both of these modes only allowed you to use 2 colors in every 8x8 pixel cell.  However, there are multicolor modes available which allowed you to have twice as many colors in each 8x8 cell but it reduced the number of columns.
+	
+	One of the most important parts of the Commodore 64 is the audio chip called SID, which stands for Sound Interface Device.
+	It supported only 3 voices but because it had a complete ADSR envelope, which stands for Attack-Decay-Sustain-Release, you were able to create high dynamic sounds.
+	And it is concerned to be arguably the best sound chip from this area of computing.
+	
+Slide 9 (1:00)
+	Here are the two models of the C64 that was available to consumers when it was on the market.
+	The original release of the Commodore 64 is commonly referred to as the "Breadbox" version as was related back in 1982.  Commodore did make some minor changes for a few years, which included a different colors of the function keys.
+	But the biggest change came in 1986 with the release of the Commodore 64C.  The reason for this version was because Commodore had just release their newest computer called the Commodore 128 the previous year and they wanted a version of the C64 that had a similar look to the C128.
+	You were able to run the same programs and games on the 64C that ran on the Breadbox.  Aside from the case, the 64C had lower voltage chips so it didn't fail as often as its the Breadbox counter part.
+	When I was younger we had both models but the Breadbox did fail on us after a while so that is when we picked up the 64C at a garage sale for a few bucks back in the 90s.
+	
+Slide 10 (00:45)
+	One of the reasons why the C64 sold so well is because if the 64 killobytes of memory.
+	However, when you first turned on the Commodore 64 it only reported that you had 38 KB of RAM free.  The reason for this is because 20 killobytes of the RAM mapped to the Character, BASIC, and KERNAL ROM and 6 killobytes was reserved for the Stack, Zero Page, and I/O.
+	This left 38 KB of memory for the programmer, however, the C64 does have the ability to switch out BASIC and the KERNAL back to RAM so that you can get an additional 16 killobytes to work with.
+	And below is a picture of what the user sees when they first boot up the Commodore 64.
+
+Slide 11 (1:00)
+	Here is a graphical representation of the C64 RAM and shows the ROM overlayed on top of the areas of RAM.
+	As you can see here the first 1 killobytes of RAM is were the Zero Page and Stack areas are as well as other work related memory.
+	Then we have the default screen memory location for display characters onto the screen at the next 1 killobytes of RAM.
+	And then the next 38 killobytes of RAM is where your program would reside.
+	Then the following 8 killobytes of memory is where BASIC would be by default.
+	And then you have a 4 killobytes area of RAM which is also available to the programmer.
+	The next 4 killobytes would be either where the character ROM would be or used I/O.
+	And the last remaining 8 killobytes of RAM would be where the KERNAL is loaded.
+
+Slide 12 (1:45)
+	Ok, so now we are going to talk more about the tools and concepts that you need to know in order to get started programming for the C64.
+	
+	First you are going to need to download a Commodore 64 emulator.  The one that is most used if called VICE which stands for the Versatile Commodore Emulator.  The link on this slide indicates where you can download it for free.
+	
+	Next you are going to want to install a program that can compile 6502 assembly to a C64 program file.  In this presentation, I will be using CBM prg Studio.  Again there is the link to download the program for free.
+	
+	You are also going to need to understand how 6502 assembly (or Machine Language) works.  I am going to talk a little bit about it in the next few slides but only enough to get you started.  There are plenty of books, websites, and videos that exist that will show you how to program in 6502 assembly.  Also at the end of this presentation I will provide additonal resources that I have found to be very helpful.
+	
+	We are not going to discuss how to program on the Commodore directly. Instead we are going to apply the concept of "Cross Development" which means that we are going to create programs on a PC, specifically a Windows based machine, and then test them in an emulator.
+	My in opinon this makes programming much simplier and the good news is that these programs can also run on actual original hardware as long as you have the ability to get your program onto a Commodore 64. In my experience, if you go down this route I would recommend that you get a device which will allow you to load your programs off of an SD card such as the SD2IEC.
+	
+Slide 13 (1:30)
+	You can program for the Commodore 64 using different languages but we are going to be focusing on Assembly.
+	So you might be asking your self why program in assembly?
+	Well the first reason is because of speed.  Unlike BASIC, which is an intepretted language, Assembly consists of opcodes which the CPU exeuctes directly.  This is much faster than any programing language you could use.
+	Also you get the highest level of control over the machine. There are a lot of techniques that can be used to optimize your program that would be otherwise impossible is any other language. In fact alot of demos for the C64 use assembly for this reason and it allows for very creative and amazing programs that push the limits of the C64.
+	However, there are downsides to programming is assembly as well.
+	One such downside is that assembly is visually harder to read and write. All of the instructions are a three letter abbrevation and it isn't always clear what a program is doing just by looking at the code.
+	Other downside is portability issues.  Over the the past few decades there have been a number of assembly compiles for the C64 and each one of them has slight various over other compilers.
+	On that note, most of the code you copy off of the internet will work in CBM prg Studio but if it doesn't it may require some minor modifications to the code in order to get it to work.
+	
+Slide 14 (1:30)
+	Now because we are programming assembly, we are going to understand how to represent numbers in binary and hexadecimal.
+	
+	First we are going to need to understand the different number schemes.
+	First there is decimal which is a base 10 number scheme and we should all be familiar because it is the numbering scheme that we use in our daily lives.  Digit values are from from 0 to 9.
+	Next one is called binary.  This scheme is base 2 and only consists of digits 0 and 1.  This is commonly referred to as a bit.  We use the "%" prefix when indicating that we are using a binary number.
+	And the last scheme you need to know about is called hexadecimal.  This scheme is base 16 and consists of digit values of 0 to F, where A, B, C, D, E, and F are 10, 11, 12, 13, 14, and 15, respectively.  We use the "$" prefix to indicate when we are dealing with a hexadecimal number.
+	
+	Now that we covered the different numbering schemes, let's look at an 8 bit number, common referred to as a byte.  It consists of 8 bits.  Each digit of the bit represents a power of 2.  So in order to get the value of a byte you need to first figure out the the power of 2 for each digit and then add them other.  For this example, I have indicated the values of each digit in the Decimal Value row.  If you add them all up you get 255 which is the maximum value that a byte can be.
+	
+Slide 15 (1:15)
+	Continuing with numbers, here are some other common higher and lower bit values that you will need to know.
+	
+	The first is a 16 bit value called a Word.  A Word consist of 2 bytes, the first is called the High Byte or Most Significate Byte and the second is called the Low Byte or Least Significate byte.  As you can see indicated in the table, the power of 2 values now go up to 15 which allows a maximum value of 65,535 or 64K.  You will need to know how to use 16 bit number when addressing the memory of the C64.
+	
+	And the last number we are going to discuss is a 4 bit value called a Nibble.  A Nibble only has 4 bits.  The reason to be aware of a nibble is because this is how to write 8-bit hexadecimal numbers.  The first digit of a hexadecimal number is the High Nibble and the next digit is the Low Nibble.  There are going to be many instances where you will be using hexadecimal values in your code so it is important to understand how this works.
+	
+Slide 16 (1:30)
+	Now let's take a look at some of instructions that you will be using while programming.
+	
+	The 6502 chip has 56 different opcodes. Each opcode tells the CPU to do something.  However, we are only going to look at a small set of these opcodes during this presentation.
+	
+	The first one that I want to discuss is called "lda". This instruction loads a value into the Accumulator.  Now remember we previously discussed that the Accumulator is known the A register.
+	The next instuction is called "sta" which will store the value from the A register and put it into a specific memory location.
+	
+	These instructions are commonly used to get or set values to and from the memory.
+	
+	Let's look at the example below.
+	
+	The first line is going to take the decimal value 2 and load it into the A register. You may notice that there is a pound symbol before the number 2. This tells the computer that we want to load the number value 2 into the register. The next line will then store the value of the A register into memory location 400 hex. So what is happening here is that we are putting the value 2 to memory location 400 hex.
+	
+	Now the next line will take the value stored at memory address 400 hex and loads it into the A register. This time we don't have a pound symbol before the number.  This tells the computer that we want to load the value stored at the specified memory location. The following line then stores the value of the A register into memory location 401 hex. So here we are simply copying the value at memory location 400 hex into memory location 401 hex.
+	
+Slide 17 (1:00)
+	The C64 allows you to load values into registers using different arguements.
+	
+	What this means is that the 6502 chip allows for values to be stored in registers a few different ways.  This can be very useful in coding but you need to be aware that each different method comes at a cost. Because the C64 is only running at 1 Mhz it is important to keep in mind how many cycles each instruction uses. Otherwise your program could run very slow.
+	
+	In the examples indicated below, if you load a hard coded value for an "lda" instruction is it concerned to be an immediate value and it only takes 2 cycles to execute.
+	However, if you wanted to load a value into the A register from the first 255 bytes of memory it would cost 3 cycles to execute. The first 255 bytes of memory is what we refer to as Zero Page memory.
+	Lastly, if you wanted to load a value from anywhere else in memory it will cost 4 cycles.
+	
+Slide 18 (2:30)
+	You can also get values from memory directly or indirectly using indexing.
+	
+	When using indexing it is important to note that looking up values uses what is known as a zero-based index. This means that 0 represents the first element in the list.
+	
+	In this example, I have a variable which contains a list of eight bytes which I have named "myList". If I wanted to store a specific element from this list into the A register, there would be two ways of going about it.
+	
+	The first one is a direct lookup which involves passing the index number into the X register. You may notice that the instruction to load a value into the X register is similar to that of loading a value into the A register.  In this case it is called "ldx".
+	After setting the X register value, you to pass it as an arguement to the "lda" instruction. This tells the CPU to load the A register with the value stored at the memory location where the myList variable begins but it adds the value stored in the X register as an offset.  So in this example, it loads the 3rd item in the list into the A register.
+	
+	The second block of code is an indirect look up.  This is needed if you don't know the memory of the variable, but we will discuss more about that in the upcoming examples. The first 4 lines of code are storing the memory location of the myList variable into a memory address.  Because the CPU is only 8-bit we need to have separate sets of instruction to store the High and Low bytes.  This can be accomplished by using the prefix "#<" and getting the low byte and "#>" when getting the high byte. After these instructions have executed the memory at FD FE hex will contain the address of variable myList.
+	Next we store the value of decimal 6 onto the Y register. Lastly, we get the value that the memory location stored at FD FE hex, offseted by the value stored in the Y register.
+	It is important to note that when using this indirect approach that you only need to pass in the first byte of the memory address that contains the memory location.  So in this case FD hex.
+	
+	Also, you will note that each of these instructions have a different execution times when using direct and indirect indexing.  Again I will demonstrate different ways to make you code more effecient in the upcoming examples.
+
+Slide 19 (1:00)
+	It is important to understand how to store 16-bit values into memory so I am going to take a moment to discuss this further. So previously we discussed that the Commodore 64 has 64 KB of RAM which can be represented by a 16-bit value but because it uses an 8-bit CPU we cannot store a 16-bit value into memory in a simple load and store instruction combination.  Instead we need to split up the number into its high and low byte values.  Looking at this slide I show that the first two lines of code are getting the Least Significate Byte from 401 hex which is one and stores it at memory address $fb hex.  Then we get the Most Significate Byte which is 4 and store it into $fc hex. This a common practice in C64 assembly when storing 16-bit values in memory so this is an important concept to understand.
+
+Slide 20 (1:00)
+	Building onto of the previous slide, you can store 16-bit values into the memory location where your program resides which means that you can create what is known as "Self-modifying code". This is useful when you want to want to use something like an indirect index scheme to store a value into memory by having the program overwrite there arguements that are used by specific opcodes.  In the example shown here, you can see that I am trying to store a value from the A register into memory 1000 hex.  To the right I have a table which shows the opcode 99 hex which represents the STA instruction along with the arguements for the High and Low Bytes. As you can see this is the machine byte code which tells the C64 to store the value of the A register into memory location 1000 hex.  Now if we look at the next sets of instructions on the left side it is going to store the values of 0401 hex into the memory location at a label plus some offset.  This offset tells the compiler where to store the byte in memory. So for label+1 it will store the low byte value at the loction where the Low byte arguement for the STA command is in memory and label+2 will be the High byte arguement.  The end result would be that the original line of code for STA instruction will now be storing the value of the A register into 0401 hex instead of 1000 hex.  You will see how this will be useful in the upcoming examples.
+	
+Slide 21 (2:00)
+	Being able to have your programming change what part to execute next, in my opinon, is one of the most important instructions in any language.
+	
+	These set of instructions fall under the category of what is known as "Flow Control". It controls which instruction gets executed based on a set of rules.
+	
+	The first of these instructions is call "jmp" which is simply called Jump and what it does it is unconditionally will jump to a different part of your program by setting the Program Counter register to the address indicated after the "jmp" opcode.
+	
+	The next set of instructions are "jsr" and "rts" which are Jump to Subroutine and Return from Subroutine. The CPU allows you to create parts of code which you can jump to unconditionally but it stores your last Program Counter location onto the Stack so that when you execute "rts" it will return your program execution back to you previous location.  This is useful if you wanted to call a part of your program that is used to repeat a bunch of steps without you haven't to write duplicate code.
+	
+	The last set of instructions are known as Branches. Branches jump to different locations based on the state of the P register. If you remember from earlier, we discussed that the P register contains the processor state after the execution of the last instruction.  There are many different branch opcodes and each tests a different bit of the P register. 
+	
+	I have outlined the P register on this slide.  The only bit I am going to discuss here is the Zero Flag.  This bit gets set by the CPU if the result of the previous instruction was zero. So if you wanted to branch to a specific memory location based on whether the Zero Flag is set you would use "beq".  You will see how this is used in the upcoming examples.
+	
+Slide 22 (15:15)
+	Ok, now we are going to switch over to CBM prg Studio and take a look at some examples in more detail.
+	
+	EXAMPLE 1: (5:15)
+	
+	Here is CBM prg Studio and I already have an assembly code file loaded.  Here I have two code blocks which are commented out using the semi-colon character so that they don't execute yet.  Near the top of the the window we have a directive that indicates the hex address in RAM where our program will load.  In this case C000 hex. Below that we have a label for the entry point of our program. You don't have to do this but I do, so helps me keep my code looking orginized.  All labels have to be left aligned in your code.  At the bottom we have the "rts" instruction which indicates that our program is done and it will return our program back to BASIC.
+	
+	Let's unremark the first code block. This code is the same as what I showed you in a previous slide where it loads the character "A" into memory address 400 hex. By default, that memory location maps to the video RAM.  So what this code will do is print the character "A" to the screen.  Now, let's step through the code so that we can see what is happening.
+	
+	CBM prg Studio has a built in debugger which is very useful as I'll demonstrate in a moment. In order to debug your code you simply press F8. (F8) Ok, now a few new windows just opened up. The left most window shows a memory dump of the Commodore 64 showing our code as well as the memory locations and opcodes.  This allows us to see which line of code that is is about to execute. In this case the "lda" instruction is the first thing that our program will run. Above the code, you can see all of the C64's registers and their current values.  One of the windows to the right show the Video Memory which is what the user would see on the screen as your program runs. As you can see it is filled with "@" characters which is the default state in the debugger because the "@" charater maps to value of zero.  Below that window we have the Memory Viewer which shows the 8-bit values of the C64 RAM itself.  I'm not going cover the other windows and features of the debugger as they won't be used in this presentation.
+	
+	Now, I want everyone to pay attention to the value of the "A" register marked "AC" in the Debugger window as I step into the first instruction. In order to step you press F7. (F7) After stepping you should now see that the value of the "A" register changed from 0 to 1. The reason why it says 1 and not "A" is because the "A" character maps to the value of one.
+	
+	At this point the next line of execution now has the "sta" instruction selected. I want everyone to look at the video memory window as I step into the next line of code, specifically the first character. (F7) Ok, as you can see the character changed from "@" to "A".
+	
+	The last thing to run is the "rts" instruction which will simply make the debugger jump to the 0 address in memory. (F7) This signafies that the program is done running and you can close out of the debugger.
+	
+	The debugger is great and all but as a programmer you will want to see your program run on the Commodore 64 environment. CBM prg Studio makes that pretty easy as well.  You can configure it to run inside of an emulator or compile it to a PRG file and run it on an actual C64.  But for this presentation I'm going to show it in an emulator.
+	
+	To run your program you simply press F5. (f5) As long as there aren't any errors in your code, you will see a raw code dump of your program which you can simply close out of. Then it will run the emulator.  As you can see it started the Commodore 64 emulator VICE and executed "RUN" but nothing happened.  That is because RUN only works for BASIC programs and we are running an assembly program.  I'll touch more on this in the next examples but for this example, you will need to type "SYS 49152" to run your program. And there you go! It printed the charater "A" to the screen.
+	
+	Now let's go back to our code and look at the next block of code. This next example will demonstrate how to create a simple loop that will print through every character of the C64 onto the screen.  This example will show how Flow-Control actually works as we step through this code. So, we press F8 to bring up our debugger.  (f8) First we store the character "A" into the "A" register. (F7)  Then we print it to the video memory. (F7) Now we are going to use a new opcode call "adc" which will add a number to the "A" register, in this case we are incrementing the value by 1. (F7) Now the value 2 is store in the "A" register. The next instruction "bne" means branch if the value of last instruction does not equal zero. Since the value of the last instruction was 2, the program will jump back up to the label called loop. (F7) Now are are back at the line of code that will update the video memory. (F7) After stepping that line, you will notice that the character stored at the video memory is "B" now. So what this program is doing is it will continue printing the all of the characters until the "A" register equals zero. But because our registers are 8-bit this will happen after the "A" register reaches the value of 255.  Once you add 1 to the value of 255 it will wrap back to 0 and when that happens the program will end.
+	
+
+	EXAMPLE 2: (3:30)
+	
+	Ok now we are going to look at a little bit of a more complex example as this next example is going to demonstrate the difference between using an Indirect Index and Direct Index method using Self-modifying code. The code blocks that I remarked out will both do the same thing and that is fill the video memory with the "A" character 255 times.
+	
+	Let's look at the first code block in the debugger. (F8) Ok, the first thing to note that there are new instructions being used here.  Specifically, LDX, and LDY which are the similar to LDA but they load the values into the "X" and "Y" registers respectively.  Likewise, STX and STY will store the values in either the X or Y register into a specific memory address.  Lastly, the opcode INY will increase the value of the Y reigster by 1.  Now let's begin stepping though this program. The first lines of code are assigning the value 400 hex to memory address FB through FC hex. (F7)(F7)(F7)(F7) Now if we jump to this memory address using the Memory Viewer you can see these values stored starting at FB hex.
+	
+	Continuing stepping through our code it will next put a 0 into the "Y" register (F7) and character "A" into the "A" register (F7) Next we begin the loop by storing the "A" character to the memory location indicated by the value store at FB through FC hex and offseted by the value of the "Y" register. Since the "Y" register is zero, the address it will store will be 400 hex. (F7) And now you can see it put the character onto the screen. If we continue stepping it will increase the value of the "Y" register and print the "A" at the next memory location. (F7)(F7) Because the "Y" register is now 1, the destination address will be 401 hex. (F7) Now you can see it put the "A" character in the next video memory location.  If we let this program continue it will stop once it has printd 255 characters onto the screen.
+	
+	Now before we exit the debugger I want you to look at the label below the C64 registers which reads are "Last instruction" with a number of cycles. This lets you know how many cycles the CPU needed to execute the previous instruction.  In this case, it shows that the "STA" instruction took 6 cycles to execute.  Let's keep this number in mind while we look at the second code block in this example.
+	
+	Again, the second code block has the same result as the first but this time, instead of storing the default video memory address in FB through FC hex, it stores it at the memory address where the arguement for the STA opcode resides.  What this is doing is that it is modifying the code while the program runs.  You might be asking yourself why is it doing this? Well let's step through this program and see for ourselves. (F8)
+	
+	Ok, so I am going to step until I get into the loop just so that I can see that the program is running as expected.  (F7)(F7)(F7)(F7)(F7)(F7)(F7) Ok, we see the character in the Video Memory. But I want you look see how many cycles the "STA" instruction needed this time. Only 5! This method only required 5 cycles instead of 6. If we do the math, this block of code saves a total of 255 cycles over the previous one if we allowed this program to run all the way through. This is a important concept because the C64 is a slow machine and you need to keep in mind how many cycles each instruction costs especially when inside of a loop.
+	
+	EXAMPLE 3: (2:45)
+	
+	Alright so let's look at something a little bit more practical and that is printing a string into the screen.
+	
+	So, in this next example, we are going to introduce some new concepts. The first is that you can declare constant values simply by left aligning the name of the constant and then have a equals sign and then the value. In this case we are declaring to constant "chout" which has the value FFD2 hex. At the bottom we have a variable called "string" which is of type byte and contains the values "hello world!" and terminated by a zero value.
+	
+	If you look at the code under "main" you can see that it is similar to the previous example with the Self-modifying code.  However, instead of storing the video memory address, it is storing the memory address related to the "string" variable. Also the code under "loop" has also been modified. The instruction "beq" means to branch if the value of the previous instruction is equal to zero. So what means that if the program encounters the zero value in the "string" variable it will jump the "done" label and exit the program. Otherwise it will continue onto the next instruction "jsr" which we covered in a previous slide. In this case it will run the KERNAL subroutine "chout" which will print the character to the screen.
+	
+	So let's run this program in the emulator and see the result. (F5)  Again, we are going to need to type our "SYS" command. However, this program loads into a different memory location, specially, 810 hex. So in order to run it you need to type "SYS 2064".  And now we see the string "hello world!" printed to the screen as expected. However, it is annoying to always have to type that SYS command every time you run your program so let's take care of that now.
+	
+	CBM prg Studio has a tool built in to create BASIC code in your assembly program that will execute the SYS command for you.  First we place the cursor at the top of the code window. Then we click Tools > Generate SYS call. All that you need to confirm is that your starting address of your program is correct and press OK. (OK) Now you can see that it inserted some code at the top of our program. What this is, is the byte representation of the BASIC language which contains the SYS call.  Now let's what happens when we run this code. (F5) And there we have it! Our program ran as soon as the emulator started. We can also run it again but typing "RUN".  If we type "LIST" we can see the BASIC program which simply contains the SYS command.
+	
+	EXAMPLE 4: (1:15)
+	
+	Alright, now this next example will take the code that we had from the previous one and make a subroutine out of it. The reason why you would want to create a subroutine is if you want to perform the same number of steps again and again. In our case, we can take the instructions that print a string to the screen and make a subroutine out of it.  This will allow us to call it again and again with different types of strings without having to have duplicate code in our program.
+	
+	Looking at the code, I created the subroutine called "print" by placing a label where it stores the of the X & Y resigters at the memory location for the "lda" address.  This is because I am going to use the X & Y registers as parameters for the subroutine.  If you look at the code in the "main" subroutine, it loads the high and low memory address values into the X & Y registers.  This tell the subroutine which string to print. Then I call the "print" subroutine which will print the string onto the screen.
+	
+	This is a very useful concept because I now can print multiple strings with only 3 lines of code as instead of repeating the logic that prints the string everytime. You can see this done in our next and last example.
+	
+	EXAMPLE 5: (2:30)
+	
+	So, in this example we are printing multiple strings. Let's run it quickly to see what it does. (F5) Ok, it prints "THE COMMODORE 64 ROCKS". However, I want to print a new line between the words "THE COMMORE 64" and "ROCKS". So let's see how I can implement a method to print a new line.
+	
+	The first method is to create a subroutine called "println" which calls the existing "print" subroutine and passes in the variable for the new line character which is value D hex.  I am also going to unremark out the code under the "main" label.  Ok, now let's run this code and see what happens. (F5) Alright, it works but there is a problem.  The computer needs to use a lot of cycles just to print a single character to the screen.  If we used the debugger we would discover that this method costs 68 cycles! Let's see if we can print a newline using a different approach.
+	
+	Since we are only printing a single character, we can call the KERNAL subroutine directly.  Using this method only costs 14 cycles! But the problem here is now we will end up having a bunch of duplicate code everytime we want to print a new line to the screen.  Arguably, 2 lines of code isn't that much but let's see if we can get it to a single line of code.
+	
+	Luckily, CBM prg Studio has the ability to create marcos.  Think of marcos as virtual functions as they can be used in your code similar as a subroutine. You declare your marco using the "defm" directive followed by the name of the macro.  You end your macro with the "endm" directive.  To call your macro you need to simply have the name of your macro, in our case under the main label. But the difference comes when you compile your program.  What it will do is automattically replace every place in your code where you call the macro with the code inside the macro itself. You can see this happen when we compile our program. (F5) Let's look at the code dump real quick. Here you can see that the code from the macro has been inserted at line 23. And it works!
+	
+	If you practice coding more like this, you make code that is both fast and easy to understand from the getgo.
+	
+Slide 23 (1:15)
+	At this point should have a basic understanding how to program in Assembly for the Commodore 64.
+	
+	Next you would want to expand you knowledge by learning how to the following items.
+	Being able to get input from the keyboard and joysticks so that you can start getting data from the user and taking apporiate action in your program.
+	Being able to render sprites and custom characters onto the screen is a very fun execurise and CBM prg Studio does have tools to help you create these assets.
+	Understand interrupts which allows you to execute more than one set of instructions at the same time.
+	Playing sound effects and music. There is a huge databases online where you can download audio files, also known as SID files, which can be played on an emulator or any actual C64.
+	And finally, learning how to load and save data so that you can store information for later use in your program or load additional program resources if your program is to big to fit in the C64 RAM.
+	
+Slide 24 (1:30)
+	At that is it! I have listed a few useful links related to this presentation.
+	
+	The first of the original Commodore 64 Programming Reference Guide that came with the computer back in the day. You can find this in a PDF version online, you just need to Google it.
+	Another great book is entitled "Retro Game Dev" by Derek Morris. I indicated a link to where you can purchase the book.
+	Also it is useful to see a complete overview of the C64 memory. This includes what each byte does in detail. This helps when you are ready to do more advanced programming.
+	When it comes to coding examples, Codebase64 is an amazing resource that  contains hundreds of coding examples and explains them all in detail. They have topics that include basically every area related to C64 coding in assembly.
+	As I mentioned near the beginning of the presentation that there is a huge user base for the C64 and that community resides on the Lemon64 forums. If you have any questions related to the C64 this is the place to post your questions.
+	Finally, my website is listed here at the bottom. From there you can get to my GitHub page were I have uploaded this presentation including all of the code examples so you can download them and play around with them yourself! My site has my contact information in case you need to get in touch with me for any reason.
+
+	Thank you everyone for attending! At this point I would like answer any questions that you may have had during this presentation.  Thank you!
+
+Total Running Time:
+~ 30 minutes for slides
+~ 15 minutes for examples
